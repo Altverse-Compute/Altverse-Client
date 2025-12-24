@@ -1,0 +1,48 @@
+.leaderboard {
+	width: 220px;
+	max-height: 600px;
+	background-color: #00000080;
+	padding: 2px 2px 10px;
+	position: absolute;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.leaderboardTitle {
+	width: 100%;
+	color: #f9f9f9;
+	text-align: center;
+	white-space: nowrap;
+	font: 700 20px "Open Sans", Verdana, Segoe, sans-serif;
+	display: inline-block;
+}
+
+.leaderboardTitleBreak {
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font: 18px "Open Sans", Verdana, Segoe, sans-serif;
+	overflow: hidden;
+}
+
+.leaderboardTitleBreak span {
+	width: 100%;
+	text-align: center;
+	margin-top: 5px;
+	font: 18px "Open Sans", Verdana, Segoe, sans-serif;
+	display: inline-block;
+}
+
+.leaderboardLine {
+	text-align: center;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font: 14px "Open Sans", Verdana, Segoe, sans-serif;
+	overflow: hidden;
+}
+
+.leaderboardLine span {
+	text-align: center;
+	white-space: nowrap;
+	font: 14px "Open Sans", Verdana, Segoe, sans-serif;
+}

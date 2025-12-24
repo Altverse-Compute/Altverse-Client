@@ -1,0 +1,8 @@
+.game {
+  background-color: #222222;
+  min-height: 100vh;
+
+  canvas {
+    position: absolute;
+  }
+}

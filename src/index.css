@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+:root {
+    font-family: "Advent Pro";
+
+    font-weight: 500;
+
+    --logo-accent: #4b9aeb;
+    --co: #9FB8D2;
+    --bg: #161D2A;
+    --elements-bg: #9FB8D222;
+    --spacing: 20px;
+}
+
+body.emerald {
+    --logo-accent: #4b9aeb;
+    --co: #9FB8D2;
+    --bg: #161D2A;
+    --elements-bg: #9FB8D222;
+}
+
+body {
+    color: var(--co);
+    background-color: var(--bg);
+}
