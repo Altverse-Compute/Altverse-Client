@@ -4,8 +4,12 @@ import { Close } from "./close";
 import style from "./index.module.css";
 import { LeaderBoard } from "./leaderboard";
 
-export function Game() {
-  const [canvasRef, reason] = useGame();
+interface Props {
+  ip: string;
+}
+
+export function Game(props: Props) {
+  const [canvasRef, reason] = useGame(props.ip);
 
   return (
     <div className={style.game}>

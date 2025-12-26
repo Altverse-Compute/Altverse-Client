@@ -10,6 +10,7 @@ export const Home = () => {
   const [inGame, setInGame] = useState(false);
   const game = useGameStore();
   const assets = useAssetsStore();
+  const [ip, setIp] = useState("")
 
   useEffect(() => {
     useAssetsStore.getState().fetch();
@@ -17,7 +18,7 @@ export const Home = () => {
   }, [game.isGameInit, assets.loaded]);
 
   if (inGame) {
-    return <Game />;
+    return <Game ip={ip} />;
   }
 
   return (
@@ -35,7 +36,8 @@ export const Home = () => {
           <div> </div>
           <h1>Server list</h1>
           <ServerList
-            onSelect={() => {
+            onSelect={(ip) => { 
+              setIp(ip)
               setInGame(true);
             }}
           />

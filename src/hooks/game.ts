@@ -7,7 +7,7 @@ import { useGameStore } from "../stores/game";
 import { webSocketConnection } from "../game/connection";
 import { useAssetsStore } from "../stores/assets.ts";
 
-export function useGame(): [
+export function useGame(ip: string): [
   MutableRef<HTMLCanvasElement | null>,
   string | undefined
 ] {
@@ -56,7 +56,7 @@ export function useGame(): [
     canvasRef.current!.addEventListener("mouseup", mouseEvent);
     canvasRef.current!.addEventListener("mousemove", mouseEvent);
 
-    webSocketConnection.connect();
+    webSocketConnection.connect(ip);
     webSocketConnection.link();
     useAssetsStore.getState().fetch();
 

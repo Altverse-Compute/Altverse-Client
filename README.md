@@ -1,4 +1,5 @@
 <div align="center">
-    <h1>Altverse Client</h1>
-    <p>Client for the main Altverse project</p>
+  <img src="./misc/logotype.svg" />
+  <p>A simple game/engine, a parody of evades.io</p>
 </div>
+

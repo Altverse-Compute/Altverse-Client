@@ -1,4 +1,4 @@
-import type { ClientWorld } from "shared";
+import type { ClientWorld } from "../types";
 import { config } from "../config";
 import type {
   RegisterProps,
@@ -19,10 +19,8 @@ export class ApiRequests {
     return ApiRequests.post<LoginResponse>("/login", props);
   }
 
-  public static check(token: string): Promise<CheckResponse> {
-    return ApiRequests.post<CheckResponse>("/check", {
-      token,
-    });
+  public static check(): Promise<CheckResponse> {
+    return ApiRequests.get<CheckResponse>("/auth");
   }
 
   public static worlds(): Promise<Record<string, ClientWorld>> {
@@ -39,10 +37,10 @@ export class ApiRequests {
     });
   }
 
-  private static post = <T extends ApiResponse<{}>>(
+  private static post = <T extends ApiResponse>(
     url: string,
     body: unknown,
-    withCredentials: boolean = false,
+    withCredentials: boolean = true,
   ) =>
     ApiRequests.fetch<T>({
       url,
@@ -65,7 +63,7 @@ export class ApiRequests {
 
   private static get = <T extends object>(
     url: string,
-    withCredentials: boolean = false,
+    withCredentials: boolean = true,
   ) =>
     ApiRequests.fetch<T>({
       url,

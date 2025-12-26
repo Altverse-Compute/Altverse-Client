@@ -1,15 +1,13 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { LoginProps, Profile, RegisterProps } from "../api/types";
+import { ResponseMessage, type LoginProps, type Profile, type RegisterProps } from "../api/types";
 import { ApiRequests } from "../api/requests";
 
 export interface AuthState {
-  token: string;
   valid: boolean;
   profile?: Profile;
-  logged: boolean;
 
-  validate: (token: string) => void;
+  validate: () => void;
   login: (obj: LoginProps) => Promise<string>;
   register: (obj: RegisterProps) => Promise<string>;
   logout: () => void;
@@ -20,45 +18,40 @@ export const useAuthStore = create(
     (set, get) => ({
       token: "",
       valid: false,
-      logged: false,
-      validate: async (token: string) => {
-        if (token.length === 0) return;
-        const response = await ApiRequests.check(token);
+      validate: async () => {
+        const response = await ApiRequests.check();
+        console.log(response)
 
-        if (response.successful) set({ valid: response.data.valid });
+        if (response.status === ResponseMessage.Ok) set({ valid: true, profile: response.profile});
       },
       register: async (obj) => {
         const response = await ApiRequests.register(obj);
 
-        if (response.successful) {
+        if (response.status === ResponseMessage.Ok)  {
           set({
-            valid: response.successful,
-            token: response.data.token,
-            profile: response.data.profile,
-            logged: true,
+            valid: true,
+            profile: response.profile,
           });
           return "";
         }
-        return response.data.message;
+        return response.status;
       },
       login: async (obj) => {
         const response = await ApiRequests.login(obj);
 
-        if (response.successful) {
+        if (response.status === ResponseMessage.Ok) {
           set({
-            valid: response.successful,
-            token: response.data.token,
-            profile: response.data.profile,
-            logged: true,
+            profile: response.profile,
+            valid: true,
           });
           return "";
         }
-        return response.data.message;
+        return response.status;
       },
       logout: async () => {
-        ApiRequests.logout(get().token);
-        set({ token: "", valid: false });
-        console.log("logout");
+        // ApiRequests.logout(get().token);
+        // set({ token: "", valid: false });
+        // console.log("logout");
       },
     }),
     {
@@ -67,7 +60,7 @@ export const useAuthStore = create(
         if (!state) return;
 
         state.valid = false;
-        state.validate(state.token);
+        state.validate();
       },
     },
   ),

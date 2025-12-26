@@ -1,7 +1,7 @@
 import { config } from "../../config.ts";
 
 interface Props {
-  onSelect: (id: number) => void;
+  onSelect: (ip: string) => void;
 }
 
 export const ServerList = (props: Props) => {
@@ -12,7 +12,7 @@ export const ServerList = (props: Props) => {
           className={
             "pt-1 pb-1 pr-1 bg-[#9FB8D222] flex flex-row outline-2 outline-[#9FB8D2] rounded-[10px] min-w-15  hover:opacity-75 transition-opacity"
           }
-          onClick={() => props.onSelect(index)}
+          onClick={() => props.onSelect(server.host)}
         >
           <b
             className={

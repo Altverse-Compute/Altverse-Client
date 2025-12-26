@@ -5,6 +5,7 @@ import { useGameStore } from "../stores/game";
 import { config } from "../config";
 import { game } from "../proto/generated/js";
 import { Compress } from "./compress.ts";
+import Cookies from "js-cookie";
 
 export class WebSocketConnection {
   open: boolean = false;
@@ -31,8 +32,9 @@ export class WebSocketConnection {
     }
   }
 
-  connect() {
-    this.ws = new WebSocket(config.api.replace("http", "ws") + "/server", [
+  connect(api: string) {
+    console.log(api)
+    this.ws = new WebSocket(api.replace("http", "ws"), [
       "permessage-deflate",
     ]);
     this.ws.binaryType = "arraybuffer";
@@ -41,7 +43,7 @@ export class WebSocketConnection {
         JSON.stringify({
           init: {
             hero: "",
-            session: useAuthStore.getState().token,
+            session: Cookies.get("token"),
           },
         })
       );

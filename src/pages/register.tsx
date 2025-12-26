@@ -35,7 +35,7 @@ export const Register = () => {
     const error = await auth.register({
       username,
       password,
-      registerToken: token,
+      token,
     });
 
     setError(error);

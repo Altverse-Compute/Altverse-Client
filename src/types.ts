@@ -16,9 +16,9 @@ export enum WorldEffect {
 }
 
 export enum AccountRole {
-    None = 0,
-    MapMaker,
-    Dev,
+    None = "USER",
+    Mod = "MOD",
+    Dev = "DEV",
 }
 
 export interface ChatMessage {

@@ -3,7 +3,7 @@ export const config = {
   changelog: [["New entitites"]],
   servers: [
     {
-      host: "127.0.0.1",
+      host: "http://localhost:7002",
       flag: "🏳️",
       name: "Dev Server",
     },

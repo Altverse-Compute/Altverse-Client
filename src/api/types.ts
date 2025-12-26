@@ -1,14 +1,13 @@
-import type { AccountRole } from "shared";
+import type { AccountRole } from "../types";
 
-export interface ApiResponse<T extends object> {
-  successful: boolean;
-  data: T;
-}
+export interface ApiResponse {
+  status: ResponseMessage;
+} 
 
 export interface RegisterProps {
   username: string;
   password: string;
-  registerToken: string;
+  token: string;
 }
 
 export interface LoginProps {
@@ -16,22 +15,25 @@ export interface LoginProps {
   password: string;
 }
 
-export type LoginResponse = ApiResponse<{
+export type LoginResponse = {
+  status: ResponseMessage;
   message: ResponseMessage;
   token: string;
   profile?: Profile;
-}>;
+};
 
-export type RegisterResponse = ApiResponse<{
+export type RegisterResponse = {
+  status: ResponseMessage;
   message: ResponseMessage;
   token: string;
   profile?: Profile;
-}>;
+}
 
-export type ProfileResponse = ApiResponse<{
+export type ProfileResponse = {
+  status: ResponseMessage;
   message: ResponseMessage;
   profile?: Profile;
-}>;
+}
 
 export interface Profile {
   vp: number;
@@ -40,13 +42,13 @@ export interface Profile {
   role: AccountRole;
 }
 
-export type CheckResponse = ApiResponse<{
-  message: ResponseMessage;
-  valid: boolean;
-}>;
+export type CheckResponse = {
+  status: ResponseMessage;
+  profile: Profile
+};
 
 export enum ResponseMessage {
-  Ok = "all_ok",
+  Ok = "success",
   AccountExists = "account_exists",
   AccountNotExists = "account_not_exists",
   InternalError = "internal_error",
