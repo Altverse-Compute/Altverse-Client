@@ -33,7 +33,6 @@ export class WebSocketConnection {
   }
 
   connect(api: string) {
-    console.log(api)
     this.ws = new WebSocket(api.replace("http", "ws"), [
       "permessage-deflate",
     ]);
@@ -128,9 +127,9 @@ export class WebSocketConnection {
       try {
 
         switch (Object.keys(data)[0]) {
-          // case "message":
-          //   gameService.message(data.message);
-          //   break;
+          case "chatMessage":
+            gameService.message(data.chatMessage!);
+            break;
           case "players":
             gameService.uplayers(data.players!.players!);
             break;

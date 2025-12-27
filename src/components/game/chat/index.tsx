@@ -27,7 +27,7 @@ export function Chat() {
         >
           {messages.map((value, index) => (
             <div class={styles.chatMessage} key={index}>
-              <span>{value.author}</span>: {value.msg}
+              <span>{value.author}</span>: {value.content}
             </div>
           ))}
         </div>

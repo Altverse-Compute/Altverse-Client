@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { ResponseMessage, type LoginProps, type Profile, type RegisterProps } from "../api/types";
 import { ApiRequests } from "../api/requests";
+import Cookies from "js-cookie"
 
 export interface AuthState {
   valid: boolean;
@@ -16,7 +17,6 @@ export interface AuthState {
 export const useAuthStore = create(
   persist<AuthState>(
     (set, get) => ({
-      token: "",
       valid: false,
       validate: async () => {
         const response = await ApiRequests.check();
@@ -49,8 +49,9 @@ export const useAuthStore = create(
         return response.status;
       },
       logout: async () => {
-        // ApiRequests.logout(get().token);
-        // set({ token: "", valid: false });
+        ApiRequests.logout(Cookies.get("token")!);
+        Cookies.remove("token")
+        set({ valid: false });
         // console.log("logout");
       },
     }),

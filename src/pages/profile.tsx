@@ -3,11 +3,12 @@ import { ProfileCard } from "../components/profile";
 import { useParams } from "wouter";
 import { Header } from "../components/header.tsx";
 import { TextField } from "../components/basic/text.tsx";
-import { useState } from "preact/hooks";
+import { useMemo, useState } from "preact/hooks";
 
 export const ProfilePage = () => {
   const params = useParams();
   const [username, setUsername] = useState("");
+  const mem = useMemo()
 
   return (
     <div className={"flex flex-row h-screen w-screen gap-1 text-2xl"}>

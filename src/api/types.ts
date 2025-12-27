@@ -35,6 +35,18 @@ export type ProfileResponse = {
   profile?: Profile;
 }
 
+export type ServersResonse = {
+  status: ResponseMessage;
+  servers?: Array<ServerElement>;
+}
+
+export interface ServerElement {
+  icon: string;
+  name: string;
+  domain: string;
+  online: number;
+}
+
 export interface Profile {
   vp: number;
   username: string;

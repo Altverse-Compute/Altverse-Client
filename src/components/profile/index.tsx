@@ -22,7 +22,7 @@ export const ProfileCard = (props: Props) => {
 
   useEffect(() => {
     const fetch = async () => {
-      setProfile((await ApiRequests.profile(props.username + "")).data.profile);
+      setProfile((await ApiRequests.profile(props.username + "")).profile);
     };
     fetch();
   }, []);
@@ -30,7 +30,7 @@ export const ProfileCard = (props: Props) => {
   const role = () => {
     if (profile) {
       if (profile.role === AccountRole.Dev) return "Dev";
-      if (profile.role === AccountRole.MapMaker) return "Map Maker";
+      if (profile.role === AccountRole.Mod) return "Mod";
     }
   };
 

@@ -8,6 +8,7 @@ import type {
   CheckResponse,
   RegisterResponse,
   ProfileResponse,
+  ServersResonse,
 } from "./types";
 
 export class ApiRequests {
@@ -29,6 +30,10 @@ export class ApiRequests {
 
   public static profile(username: string): Promise<ProfileResponse> {
     return ApiRequests.get<ProfileResponse>("/profile/" + username);
+  }
+
+  public static servers(): Promise<ServersResonse> {
+    return ApiRequests.get<ProfileResponse>("/servers");
   }
 
   public static logout(token: string): Promise<CheckResponse> {

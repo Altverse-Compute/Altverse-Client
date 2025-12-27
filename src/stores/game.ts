@@ -38,11 +38,11 @@ export interface ShortPlayer {
 interface State {
   selfId: number;
   players: Record<string, ShortPlayer>;
-  messages: Array<ChatMessage>;
+  messages: Array<game.IChat>;
   isGameInit: boolean;
   reason?: string;
 
-  message(data: ChatMessage): void;
+  message(data: game.IChat): void;
   uplayers(data: game.IPlayers): void;
   self(data: game.IPackedPlayer): void;
   areaInit(data: game.IPackedArea): void;
