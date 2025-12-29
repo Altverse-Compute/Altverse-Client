@@ -1,4 +1,4 @@
-import type { AccountRole } from "../types";
+import type {AccountRole} from "../types";
 
 export interface ApiResponse {
   status: ResponseMessage;
@@ -65,4 +65,5 @@ export enum ResponseMessage {
   AccountNotExists = "account_not_exists",
   InternalError = "internal_error",
   InvalidBody = "invalid_body",
+  NotFound = "not_found"
 }

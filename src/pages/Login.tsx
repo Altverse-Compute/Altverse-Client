@@ -4,7 +4,6 @@ import {useEffect, useRef, useState} from "preact/hooks";
 import {Link} from "wouter";
 import {useAuthStore} from "../stores/auth.ts";
 import {navigate} from "wouter/use-browser-location";
-import {Header} from "../components/Header.tsx";
 
 export const Login = () => {
   const username = useRef<string>("");
@@ -44,17 +43,12 @@ export const Login = () => {
   const auth = useAuthStore()
 
   useEffect(() => {
-    if (auth.valid) navigate("/home")
+    if (auth.valid) navigate("/dashboard")
   }, [auth.valid]);
 
   return <>
 
-    <div className={"flex items-center justify-center"}>
-    <div className={"w-[1000px] "}>
-    <Header></Header>
-    </div>
-    </div>
-    <div className={"w-full min-h-screen flex flex-col justify-center items-center bg-base-200"}>
+    <div className={"w-full h-full flex-1 border border-base-300 bg-base-300  flex flex-col justify-center items-center bg-base-200"}>
       <Card>
           <h1 className={"text-2xl"}>Sign in</h1>
           <TextField type="text" placeholder={"Enter username"} error={usernameError} onInput={value => {

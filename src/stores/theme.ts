@@ -1,16 +1,19 @@
 import {create} from "zustand";
 import {persist} from "zustand/middleware";
 
+export type Theme = "default" | "dark-plus"
+export const ThemesNames: Theme[] = ["default", "dark-plus"]
+
 interface State {
-    value: "default" | "dark" | "black";
-    setTheme: (value: "default" | "dark" | "black") => void;
+    value: Theme;
+    setTheme: (value: Theme) => void;
 }
 
 export const useThemeStore = create(
     persist<State>(
         (set) => ({
             value: "default",
-            setTheme: (value: "default" | "dark" | "black") => set({
+            setTheme: (value: Theme) => set({
                 value
             })
         }),

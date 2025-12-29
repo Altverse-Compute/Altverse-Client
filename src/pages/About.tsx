@@ -6,7 +6,7 @@ export const About = () => {
   const auth = useAuthStore();
 
   return <>
-      <div className={"flex gap-2 "}>
+      <div className={"flex gap-2 flex-col md:flex-row"}>
         <Card>
           <h1 className={"text-xl"}>Game status</h1>
           <ul className="steps steps-vertical text-lg">
@@ -18,7 +18,7 @@ export const About = () => {
           </ul>
         </Card>
         <div
-            className={"card bg-base-300 md:w-[800px] flex flex-col md:flex-row items-center gap-20 justify-center"}>
+            className={"card text-center md:text-left bg-base-300 md:w-[800px] w-full flex flex-col md:flex-row items-center md:gap-20 gap-2 justify-center"}>
           <div className={"flex flex-col gap-2"}>
             <h1 className={"text-4xl"}>Altverse</h1>
           <p className={"text-2xl"}>A fan game based on evades.io.</p>
@@ -37,7 +37,7 @@ export const About = () => {
       </div>
       <div className="divider text-2xl">Key features</div>
       <h1 className={"text-center text-2xl"}></h1>
-      <div className={"flex gap-2"}>
+      <div className={"flex gap-2 flex-col md:flex-row"}>
         <Card>
           <h1 className={"text-xl flex gap-1"}><i class="bi bi-hdd-stack-fill"></i>Scalability</h1>
           <p className={"text-lg"}>By connecting the main server to the game servers using gRPC, the game can easily scale to any number of

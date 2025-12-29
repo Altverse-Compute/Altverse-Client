@@ -19,7 +19,6 @@ export const ServerList = (props: Props) => {
     }, []);
 
     return <div className={"flex flex-col w-full text-2xl gap-1"}>
-        <h1 className={""}>Server list:</h1>
         {servers == undefined &&
             <div className={"skeleton w-full h-[66px]"}></div>
         }
