@@ -1,12 +1,11 @@
-import { create } from "zustand";
+import {create} from "zustand";
 import Entity from "../game/units/entity";
-import { Player } from "../game/units/player";
+import {Player} from "../game/units/player";
 import Zone from "../game/units/zone";
-import { Spawn } from "../game/spawner";
-import { useKeyboard } from "./keyboard";
-import { useMouseStore } from "./mouse";
-import { game } from "../proto/generated/js";
-import type { ChatMessage } from "../types";
+import {Spawn} from "../game/spawner";
+import {useKeyboard} from "./keyboard";
+import {useMouseStore} from "./mouse";
+import {game} from "../proto/generated/js";
 
 export interface GameState {
   areaBoundary: { w: number; h: number };

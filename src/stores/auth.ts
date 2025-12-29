@@ -1,11 +1,11 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { ResponseMessage, type LoginProps, type Profile, type RegisterProps } from "../api/types";
-import { ApiRequests } from "../api/requests";
+import {create} from "zustand";
+import {persist} from "zustand/middleware";
+import {type LoginProps, type Profile, type RegisterProps, ResponseMessage} from "../api/types";
+import {ApiRequests} from "../api/requests";
 import Cookies from "js-cookie"
 
 export interface AuthState {
-  valid: boolean;
+  valid: boolean | undefined;
   profile?: Profile;
 
   validate: () => void;
@@ -16,8 +16,8 @@ export interface AuthState {
 
 export const useAuthStore = create(
   persist<AuthState>(
-    (set, get) => ({
-      valid: false,
+    (set) => ({
+      valid: undefined,
       validate: async () => {
         const response = await ApiRequests.check();
         console.log(response)
@@ -59,8 +59,6 @@ export const useAuthStore = create(
       name: "token",
       onRehydrateStorage: () => async (state) => {
         if (!state) return;
-
-        state.valid = false;
         state.validate();
       },
     },

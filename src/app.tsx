@@ -1,26 +1,26 @@
-import { Route, Router } from "wouter";
-import { Login } from "./pages/login";
-import { Home } from "./pages/home";
-import { Register } from "./pages/register";
-import { Suspense } from "preact/compat";
-import { ProfilePage } from "./pages/profile";
-import { useEffect } from "preact/hooks";
-import { useAuthStore } from "./stores/auth.ts";
-import { navigate } from "wouter/use-browser-location";
+import {Route, Router} from "wouter";
+import {Login} from "./pages/Login.tsx";
+import {Register} from "./pages/Register.tsx";
+import {About} from "./pages/About.tsx";
+import {GamePage} from "./pages/Home.tsx";
+import {Footer} from "./components/Footer.tsx";
+import {Header} from "./components/Header.tsx";
 
 export const App = () => {
-  const auth = useAuthStore();
-  useEffect(() => {
-    if (!auth.valid) navigate("/login");
-  }, [auth.valid]);
   return (
-    <Suspense fallback={"Haha"}>
-      <Router>
-        <Route path={"/"} component={Home} />
-        <Route path={"/login"} component={Login} />
-        <Route path={"/register"} component={Register} />
-        <Route path={"/profile/:?username"} component={ProfilePage} />
-      </Router>
-    </Suspense>
+      <>
+          <div className={"flex w-full flex-col min-h-screen items-center"}>
+              <div className={"md:w-[1000px] w-full flex flex-col gap-2 items-center min-h-screen"}>
+                  <Header/>
+                <Router>
+                <Route path={"/login"} component={Login} />
+                <Route path={"/register"} component={Register} />
+                  <Route path={"/"} component={About} />
+                  <Route path={"/home/:?page"} component={GamePage} />
+                </Router>
+                  <Footer></Footer>
+              </div>
+          </div>
+      </>
   );
 };

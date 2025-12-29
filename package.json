@@ -10,8 +10,8 @@
 	},
 	"dependencies": {
 		"@types/snappyjs": "^0.7.1",
+		"bootstrap-icons": "^1.13.1",
 		"js-cookie": "^3.0.5",
-		"lz4-wasm": "^0.9.2",
 		"lz4js": "^0.2.0",
 		"mitt": "^3.0.1",
 		"preact": "^10.27.2",
@@ -21,12 +21,15 @@
 		"zustand": "^5.0.9"
 	},
 	"devDependencies": {
+		"@grpc/grpc-js": "^1.14.3",
+		"@grpc/proto-loader": "^0.8.0",
 		"@preact/preset-vite": "^2.10.2",
 		"@rollup/plugin-alias": "^6.0.0",
 		"@tailwindcss/vite": "^4.1.17",
 		"@types/js-cookie": "^3",
 		"@types/lz4js": "^0.2.2",
 		"@types/node": "^24.10.1",
+		"daisyui": "^5.5.14",
 		"tailwindcss": "^4.1.17",
 		"typescript": "~5.9.3",
 		"vite": "^7.2.4",

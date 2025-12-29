@@ -1,6 +1,6 @@
-import type { ClientWorld } from "shared";
-import { create } from "zustand";
-import { ApiRequests } from "../api/requests";
+import type {ClientWorld} from "../types";
+import {create} from "zustand";
+import {ApiRequests} from "../api/requests";
 
 interface State {
   worlds: Record<string, ClientWorld>;

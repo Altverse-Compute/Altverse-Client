@@ -1,26 +1,24 @@
-import { keyboardEvents } from "./events/keyboard";
-import { mouseEvents } from "./events/mouse";
-import { useAuthStore } from "../stores/auth";
-import { useGameStore } from "../stores/game";
-import { config } from "../config";
-import { game } from "../proto/generated/js";
-import { Compress } from "./compress.ts";
+import {keyboardEvents} from "./events/keyboard";
+import {mouseEvents} from "./events/mouse";
+import {useGameStore} from "../stores/game";
+import {game} from "../proto/generated/js";
+import {Compress} from "./compress.ts";
 import Cookies from "js-cookie";
 
 export class WebSocketConnection {
   open: boolean = false;
-  reason: string = "";
+  // reason: string = "";
   kBPerPackage = 0;
   kBPerSecond = 0;
   rawPPS = 0;
   packagesPerSecond = 0;
   private ws?: WebSocket;
 
-  disconnect() {
-    if (this.open) {
-      this.ws!.close();
-    }
-  }
+  // disconnect() {
+  //   if (this.open) {
+  //     this.ws!.close();
+  //   }
+  // }
 
   sendMessage(msg: string) {
     if (this.open) {
