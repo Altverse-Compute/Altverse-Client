@@ -1,14 +1,14 @@
 import {useEffect, useState} from "preact/hooks";
-import type {ServersResonse} from "../api/types.ts";
 import {ApiRequests} from "../api/requests.ts";
 import {Card} from "./basic/Card.tsx";
+import type { http } from "../proto/generated/js/index";
 
 interface Props {
     onSelect: (url: string) => void
 }
 
 export const ServerList = (props: Props) => {
-    const [servers, setServers] = useState<ServersResonse |undefined >();
+    const [servers, setServers] = useState<http.ServersResponse>();
 
     useEffect(() => {
         const fetchServers = async () => {
@@ -33,7 +33,7 @@ export const ServerList = (props: Props) => {
                         <p className={"text-xl"}>Current online {server.online}</p>
                     </div>
                     </div>
-                    <button className={"btn btn-lg btn-primary" } onClick={() => {props.onSelect(server.domain)}}>Join</button>
+                    <button className={"btn btn-lg btn-primary" } onClick={() => {props.onSelect(server.domain!)}}>Join</button>
                 </div>
             </Card>
             </div>

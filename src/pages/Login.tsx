@@ -43,11 +43,10 @@ export const Login = () => {
   const auth = useAuthStore()
 
   useEffect(() => {
-    if (auth.valid) navigate("/dashboard")
+    if (auth.valid !== undefined && auth.valid) navigate("/dashboard")
   }, [auth.valid]);
 
   return <>
-
     <div className={"w-full h-full flex-1 border border-base-300 bg-base-300  flex flex-col justify-center items-center bg-base-200"}>
       <Card>
           <h1 className={"text-2xl"}>Sign in</h1>

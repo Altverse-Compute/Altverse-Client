@@ -4,9 +4,11 @@ export const ThemeSelector = () => {
     const theme= useThemeStore()
 
     return <div className="dropdown dropdown-">
+        {/* @ts-ignore */}
         <div tabIndex="0" role="button" className="btn m-1 btn-lg">
             Theme
         </div>
+        {/* @ts-ignore */}
         <ul tabIndex="-1" className="dropdown-content bg-base-300 rounded-box z-1 w-52 p-2">
             {ThemesNames.map((v, i) => <li>
                 <input

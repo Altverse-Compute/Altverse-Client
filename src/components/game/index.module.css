@@ -2,8 +2,8 @@
   background-color: #222222;
   min-height: 100vh;
   min-width: 100vw;
-  z-index: 9;
-  position:absolute;
+  z-index: 10x;
+  position:fixed;
   left: 0;
   top: 0;
 

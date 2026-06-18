@@ -1,6 +1,6 @@
-import type {ClientWorld} from "../types";
-import {create} from "zustand";
-import {ApiRequests} from "../api/requests";
+import type { ClientWorld } from "../types";
+import { create } from "zustand";
+import { ApiRequests } from "../api/requests";
 
 interface State {
   worlds: Record<string, ClientWorld>;
@@ -12,9 +12,9 @@ export const useAssetsStore = create<State>((set) => ({
   worlds: {},
   loaded: false,
   fetch() {
-    ApiRequests.worlds().then((worlds) => {
-      set({ worlds, loaded: true });
-      console.log(worlds);
-    });
+    // ApiRequests.worlds().then((worlds) => {
+    //   set({ worlds, loaded: true });
+    //   console.log(worlds);
+    // });
   },
 }));

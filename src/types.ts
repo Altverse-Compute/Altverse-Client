@@ -1,61 +1,46 @@
 export interface RawClient {
-    fillStyle: string;
-    strokeStyle: string;
-    areaFill: string;
-    areaAlpha?: number;
-    backgrounds?: Array<[string, number]>;
-    effect: WorldEffect;
+  fillStyle: string;
+  strokeStyle: string;
+  areaFill: string;
+  areaAlpha?: number;
+  backgrounds?: Array<[string, number]>;
+  effect: WorldEffect;
 }
 
 export enum WorldEffect {
-    Rain = 0,
-    RainStorm,
-    Snow,
-    SnowStorm,
-    Autumn,
-}
-
-export enum AccountRole {
-    None = "USER",
-    Mod = "MOD",
-    Dev = "DEV",
-}
-
-export interface ChatMessage {
-    author: string;
-    msg: string;
-    role: string;
-    world: string;
-    color?: string;
-    id?: number;
+  Rain = 0,
+  RainStorm,
+  Snow,
+  SnowStorm,
+  Autumn,
 }
 
 export interface ClientWorld {
-    client: RawClient;
-    areas: Record<number, ClientArea>;
+  client: RawClient;
+  areas: Record<number, ClientArea>;
 }
 
 export interface ClientArea {
-    win?: boolean;
-    vp?: number;
-    text?: string;
+  win?: boolean;
+  vp?: number;
+  text?: string;
 }
 
 export interface AssetsWorld {
-    effect?: WorldEffect;
-    backgrounds?: Array<[string, number]>;
-    fillColor: string;
-    fillAlpha: number;
+  effect?: WorldEffect;
+  backgrounds?: Array<[string, number]>;
+  fillColor: string;
+  fillAlpha: number;
 }
 
 export interface AssetsZone {
-    fillColor: string;
+  fillColor: string;
 }
 
 export type AssetsEntity = [string];
 
 export interface Assets {
-    textures: Record<string, string>;
-    zones: Record<string, AssetsZone>;
-    entities: Array<AssetsEntity>;
+  textures: Record<string, string>;
+  zones: Record<string, AssetsZone>;
+  entities: Array<AssetsEntity>;
 }

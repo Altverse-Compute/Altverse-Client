@@ -1,53 +1,50 @@
-import type { ClientWorld } from "../types";
 import { config } from "../config";
-import type {
-  RegisterProps,
-  ApiResponse,
-  LoginProps,
-  LoginResponse,
-  CheckResponse,
-  RegisterResponse,
-  ProfileResponse,
-  ServersResonse,
-} from "./types";
+import type { RegisterProps, LoginProps } from "./types";
+import { http } from "../proto/generated/js";
 
 export class ApiRequests {
-  public static register(props: RegisterProps): Promise<RegisterResponse> {
-    return ApiRequests.post("/register", props);
+  public static async register(
+    props: RegisterProps,
+  ): Promise<http.LoginAndRegisterResponse> {
+    const response = await ApiRequests.post("/register", props);
+    return http.LoginAndRegisterResponse.decode(await response.bytes());
   }
 
-  public static login(props: LoginProps): Promise<LoginResponse> {
-    return ApiRequests.post<LoginResponse>("/login", props);
+  public static async login(
+    props: LoginProps,
+  ): Promise<http.LoginAndRegisterResponse> {
+    const response = await ApiRequests.post("/login", props);
+    return http.LoginAndRegisterResponse.decode(await response.bytes());
   }
 
-  public static check(): Promise<CheckResponse> {
-    return ApiRequests.get<CheckResponse>("/auth");
+  public static async check(): Promise<http.AuthResponse> {
+    const response = await ApiRequests.get("/auth");
+    return http.AuthResponse.decode(await response.bytes());
   }
 
-  public static worlds(): Promise<Record<string, ClientWorld>> {
-    return ApiRequests.get<Record<string, ClientWorld>>("/worlds");
+  public static async profile(username: string): Promise<http.ProfileResponse> {
+    const response = await ApiRequests.get("/profile/" + username);
+    return http.ProfileResponse.decode(await response.bytes());
   }
 
-  public static profile(username: string): Promise<ProfileResponse> {
-    return ApiRequests.get<ProfileResponse>("/profile/" + username);
+  public static async servers(): Promise<http.ServersResponse> {
+    const response = await ApiRequests.get("/servers");
+    return http.ServersResponse.decode(await response.bytes());
   }
 
-  public static servers(): Promise<ServersResonse> {
-    return ApiRequests.get<ProfileResponse>("/servers");
-  }
-
-  public static logout(token: string): Promise<CheckResponse> {
-    return ApiRequests.post<CheckResponse>("/logout", {
+  public static async logout(token: string): Promise<http.LogoutResponse> {
+    const response = await ApiRequests.post("/logout", {
       token,
     });
+    return http.LogoutResponse.decode(await response.bytes());
   }
 
-  private static post = <T extends ApiResponse>(
+  private static post = (
     url: string,
     body: unknown,
     withCredentials: boolean = true,
   ) =>
-    ApiRequests.fetch<T>({
+    ApiRequests.fetch({
       url,
       method: "POST",
       withCredentials,
@@ -66,17 +63,14 @@ export class ApiRequests {
   //     body,
   //   });
 
-  private static get = <T extends object>(
-    url: string,
-    withCredentials: boolean = true,
-  ) =>
-    ApiRequests.fetch<T>({
+  private static get = (url: string, withCredentials: boolean = true) =>
+    ApiRequests.fetch({
       url,
       method: "GET",
       withCredentials,
     });
 
-  private static fetch<T extends object>(options: {
+  private static fetch(options: {
     url: string;
     method: "POST" | "PUT" | "GET";
     withCredentials: boolean;
@@ -91,8 +85,6 @@ export class ApiRequests {
       headers: options.method === "GET" ? undefined : headers,
       body: options.body ? JSON.stringify(options.body) : undefined,
       credentials: options.withCredentials ? "include" : "omit",
-    }).then((res) => {
-      return res.json() as Promise<T>;
     });
   }
 }

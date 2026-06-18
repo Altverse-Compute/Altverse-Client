@@ -1,14 +1,28 @@
 @import "tailwindcss";
-@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import "bootstrap-icons/font/bootstrap-icons.css";
 @import "./themes.css";
 
 @plugin "daisyui" {
-    themes: light-plus --default, dark-plus --prefersdark;
-    root: ":root";
+  themes:
+    light-plus --default,
+    dark-plus --prefersdark;
+  root: ":root";
 }
 
 :root {
-    font-family: "Kanit";
+  font-family: "Kanit", sans-serif;
+}
+
+.animate-sbounce {
+  animation: sbounce 4s linear alternate infinite;
+}
+@keyframes sbounce {
+  100% {
+    transform: translateY(-10px);
+  }
+  0% {
+    transform: translateY(10px);
+  }
 }
 /*    font-weight: 500;*/
 
