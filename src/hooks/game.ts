@@ -7,10 +7,9 @@ import { useGameStore } from "../stores/game";
 import { webSocketConnection } from "../game/connection";
 import { useAssetsStore } from "../stores/assets.ts";
 
-export function useGame(ip: string): [
-  MutableRef<HTMLCanvasElement | null>,
-  string | undefined
-] {
+export function useGame(
+  ip: string,
+): [MutableRef<HTMLCanvasElement | null>, string | undefined] {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const contextRef = useRef<CanvasRenderingContext2D>();
   const { reason } = useGameStore();
@@ -58,7 +57,7 @@ export function useGame(ip: string): [
 
     webSocketConnection.connect(ip);
     webSocketConnection.link();
-    useAssetsStore.getState().fetch();
+    useAssetsStore.getState().fetch(ip);
 
     return () => {
       window.removeEventListener("keydown", keyboardEvent);

@@ -1,11 +1,11 @@
-import {create} from "zustand";
+import { create } from "zustand";
 import Entity from "../game/units/entity";
-import {Player} from "../game/units/player";
+import { Player } from "../game/units/player";
 import Zone from "../game/units/zone";
-import {Spawn} from "../game/spawner";
-import {useKeyboard} from "./keyboard";
-import {useMouseStore} from "./mouse";
-import {game} from "../proto/generated/js";
+import { Spawn } from "../game/spawner";
+import { useKeyboard } from "./keyboard";
+import { useMouseStore } from "./mouse";
+import { game } from "../proto/generated/js";
 
 export interface GameState {
   areaBoundary: { w: number; h: number };
@@ -91,7 +91,9 @@ export const useGameStore = create<State>((set, get) => ({
   areaInit(data) {
     gameState.entities = {};
     for (const key in Object.keys(data.entities!)) {
-      gameState.entities[key] = Spawn.entity(data.entities![key] as game.PackedEntity);
+      gameState.entities[key] = Spawn.entity(
+        data.entities![key] as game.PackedEntity,
+      );
     }
     // let clientData: ClientArea | undefined;
     // const areas = useAssetsStore.getState().worlds[data.world].areas;
@@ -220,14 +222,12 @@ export const useGameStore = create<State>((set, get) => ({
   updatePlayers(data) {
     for (const p in data) {
       //@ts-ignore
-      const val = data[p] as any
+      const val = data[p] as any;
       gameState.players[p as any as number].accept(val);
       const state = get().players;
       if (
-        (val!.deathTimer !== undefined &&
-          state[p].dt !== val.deathTimer) ||
-        (val!.died !== undefined &&
-          state[p].died !== Boolean(val.died)) ||
+        (val!.deathTimer !== undefined && state[p].dt !== val.deathTimer) ||
+        (val!.died !== undefined && state[p].died !== Boolean(val.died)) ||
         (val!.world !== undefined && state[p].world !== val.world) ||
         (val!.area !== undefined && state[p].area !== val.area)
       ) {
@@ -239,11 +239,8 @@ export const useGameStore = create<State>((set, get) => ({
               name: val.name ?? state[p].name,
               world: val.world ?? state[p].world,
               area: val.area ?? state[p].area,
-              dt:
-                val.deathTimer !== undefined
-                  ? val.deathTimer
-                  : state[p].dt,
-              died: val.died != undefined  ? val.died : state[p].died,
+              dt: val.deathTimer !== undefined ? val.deathTimer : state[p].dt,
+              died: val.died != undefined ? val.died : state[p].died,
             },
           },
         });
@@ -253,7 +250,6 @@ export const useGameStore = create<State>((set, get) => ({
   newEntities(data) {
     for (const id in data) {
       gameState.entities[id] = Spawn.entity(data[id]);
-
     }
   },
   updateEntities(data) {

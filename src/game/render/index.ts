@@ -5,7 +5,7 @@ import Camera from "../storages/camera";
 import Entity from "../units/entity";
 import { Leaf } from "./entities/leaf";
 import { useAssetsStore } from "../../stores/assets";
-import { WorldEffect, type RawClient } from "../../types";
+import { http } from "../../proto/generated/js";
 
 export const customEntities: Record<string, typeof Entity> = {
   leaf: Leaf,
@@ -58,13 +58,13 @@ export class Render {
 
     const world = this.getWorld();
 
-    ctx.fillStyle = world.fillStyle;
-    ctx.strokeStyle = world.strokeStyle;
+    ctx.fillStyle = world.fillStyle!;
+    ctx.strokeStyle = world.strokeStyle!;
     ctx.lineWidth = 6;
     ctx.strokeText(state.world, Camera.w / 2, 40);
     ctx.fillText(state.world, Camera.w / 2, 40);
-    ctx.strokeText(state.area + "", Camera.w / 2, 80);
-    ctx.fillText(state.area + "", Camera.w / 2, 80);
+    ctx.strokeText(`Area ${state.area + 1}`, Camera.w / 2, 80);
+    ctx.fillText(`Area ${state.area + 1}`, Camera.w / 2, 80);
     ctx.textAlign = "left";
     ctx.fillStyle = "white";
     ctx.textAlign = "center";
@@ -73,8 +73,8 @@ export class Render {
     if (area) {
       let text = area.text ?? "";
       if (area.vp) text += " Reached " + area.vp + " VP";
-      ctx.fillStyle = world.fillStyle;
-      ctx.strokeStyle = world.strokeStyle;
+      ctx.fillStyle = world.fillStyle!;
+      ctx.strokeStyle = world.strokeStyle!;
       ctx.lineWidth = 6;
       ctx.strokeText(text, Camera.w / 2, Camera.h - 120);
       ctx.fillText(text, Camera.w / 2, Camera.h - 120);
@@ -88,7 +88,7 @@ export class Render {
     ctx.fillText(
       "pps " + webSocketConnection.packagesPerSecond,
       0,
-      Camera.h - 40
+      Camera.h - 40,
     );
     ctx.textAlign = "left";
     ctx.fillText("kbps " + webSocketConnection.kBPerSecond, 0, Camera.h - 10);
@@ -96,26 +96,26 @@ export class Render {
 
   private static getWorld() {
     let isContain = Object.keys(useAssetsStore.getState().worlds).includes(
-      gameState.world
+      gameState.world,
     );
-    let world: RawClient;
+    let world: http.IWorldProperties;
     if (!isContain)
       world = {
         fillStyle: "#fff",
         strokeStyle: "#ccc",
         areaFill: "#ccc",
-        effect: WorldEffect.Autumn,
+        effect: http.WorldEffect.AUTUMN,
       };
-    else world = useAssetsStore.getState().worlds[gameState.world].client;
+    else world = useAssetsStore.getState().worlds![gameState.world].properties!;
     return world;
   }
 
   private static getArea() {
     let isContain = Object.keys(useAssetsStore.getState().worlds).includes(
-      gameState.world
+      gameState.world,
     );
     if (isContain) {
-      const ar = useAssetsStore.getState().worlds[gameState.world].areas;
+      const ar = useAssetsStore.getState().worlds[gameState.world].areas!;
       if (ar !== undefined && Object.keys(ar).includes(gameState.area + "")) {
         return ar[gameState.area];
       }
@@ -131,18 +131,18 @@ export class Render {
       y: 0,
     });
     ctx.globalAlpha = world.areaAlpha ?? 0.3;
-    ctx.fillStyle = world.areaFill;
+    ctx.fillStyle = world.areaFill!;
     ctx.fillRect(
       pos.x,
       pos.y,
       (gameState.areaBoundary.w + 20 * 32) * Camera.s,
-      gameState.areaBoundary.h * Camera.s
+      gameState.areaBoundary.h * Camera.s,
     );
     if (world.backgrounds) {
       for (const texture of world.backgrounds) {
-        ctx.globalAlpha = texture[1];
+        ctx.globalAlpha = texture.alpha!;
 
-        ctx.drawImage(AssetLoader.images[texture[0]], pos.x, pos.y);
+        ctx.drawImage(AssetLoader.images[texture.name!], pos.x, pos.y);
       }
     }
   }

@@ -39,6 +39,17 @@ export class ApiRequests {
     return http.LogoutResponse.decode(await response.bytes());
   }
 
+  public static async worlds(serverUrl: string): Promise<http.WorldsResponse> {
+    const response = await ApiRequests.fetchFromServer({
+      url: "/worlds",
+      serverUrl,
+      method: "GET",
+      withCredentials: true,
+      body: undefined,
+    });
+    return http.WorldsResponse.decode(await response.bytes());
+  }
+
   private static post = (
     url: string,
     body: unknown,
@@ -81,6 +92,25 @@ export class ApiRequests {
     };
 
     return fetch(config.api + options.url, {
+      method: options.method,
+      headers: options.method === "GET" ? undefined : headers,
+      body: options.body ? JSON.stringify(options.body) : undefined,
+      credentials: options.withCredentials ? "include" : "omit",
+    });
+  }
+
+  private static fetchFromServer(options: {
+    url: string;
+    serverUrl: string;
+    method: "POST" | "PUT" | "GET";
+    withCredentials: boolean;
+    body?: unknown;
+  }) {
+    const headers: HeadersInit = {
+      "Content-Type": "application/json",
+    };
+
+    return fetch(options.serverUrl + options.url, {
       method: options.method,
       headers: options.method === "GET" ? undefined : headers,
       body: options.body ? JSON.stringify(options.body) : undefined,

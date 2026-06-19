@@ -1,8 +1,8 @@
-import {keyboardEvents} from "./events/keyboard";
-import {mouseEvents} from "./events/mouse";
-import {useGameStore} from "../stores/game";
-import {game} from "../proto/generated/js";
-import {Compress} from "./compress.ts";
+import { keyboardEvents } from "./events/keyboard";
+import { mouseEvents } from "./events/mouse";
+import { useGameStore } from "../stores/game";
+import { game } from "../proto/generated/js";
+import { Compress } from "./compress.ts";
 import Cookies from "js-cookie";
 
 export class WebSocketConnection {
@@ -25,24 +25,21 @@ export class WebSocketConnection {
       this.ws!.send(
         JSON.stringify({
           message: msg,
-        })
+        }),
       );
     }
   }
 
   connect(api: string) {
-    this.ws = new WebSocket(api.replace("http", "ws"), [
-      "permessage-deflate",
-    ]);
+    this.ws = new WebSocket(api.replace("http", "ws"), ["permessage-deflate"]);
     this.ws.binaryType = "arraybuffer";
     this.ws.onopen = () => {
       this.ws!.send(
         JSON.stringify({
           init: {
             hero: "",
-            session: Cookies.get("token"),
           },
-        })
+        }),
       );
       this.open = true;
     };
@@ -57,7 +54,7 @@ export class WebSocketConnection {
     this.ws.onerror = () => {
       this.open = false;
     };
-    this.ws.onmessage = this.onMessage;
+    this.ws.onmessage = (event) => this.onMessage(event);
 
     setInterval(() => {
       this.kBPerSecond = Math.round((this.kBPerPackage / 1024) * 10) / 10;
@@ -73,7 +70,7 @@ export class WebSocketConnection {
         this.ws!.send(
           JSON.stringify({
             mousePos: [event.x, event.y],
-          })
+          }),
         );
       }
     });
@@ -82,7 +79,7 @@ export class WebSocketConnection {
         this.ws!.send(
           JSON.stringify({
             mouseEnable: event,
-          })
+          }),
         );
       }
     });
@@ -92,13 +89,13 @@ export class WebSocketConnection {
           this.ws!.send(
             JSON.stringify({
               ability: key,
-            })
+            }),
           );
         } else if (key.indexOf("upgrade_") === -1)
           this.ws!.send(
             JSON.stringify({
               keyDown: key,
-            })
+            }),
           );
       }
     });
@@ -108,7 +105,7 @@ export class WebSocketConnection {
         this.ws!.send(
           JSON.stringify({
             keyUp: key,
-          })
+          }),
         );
     });
   }
@@ -116,14 +113,13 @@ export class WebSocketConnection {
   private onMessage = (event: MessageEvent) => {
     const uint8 = new Uint8Array(event.data);
     this.kBPerPackage += uint8.byteLength;
-    const packages = game.Packages.decode(Compress.decode(uint8))
+    const packages = game.Packages.decode(Compress.decode(uint8));
     const gameService = useGameStore.getState();
     this.rawPPS++;
 
     for (let index = 0; index < packages.items.length; index++) {
       const data = packages.items[index];
       try {
-
         switch (Object.keys(data)[0]) {
           case "chatMessage":
             gameService.message(data.chatMessage!);
@@ -145,11 +141,11 @@ export class WebSocketConnection {
             break;
           case "updatePlayers":
             if (data.updatePlayers != null)
-            gameService.updatePlayers(data.updatePlayers.items!);
+              gameService.updatePlayers(data.updatePlayers.items!);
             break;
           case "newEntities":
             if (data.newEntities)
-            gameService.newEntities(data.newEntities.entities!);
+              gameService.newEntities(data.newEntities.entities!);
             break;
           case "updateEntities":
             gameService.updateEntities(data.updateEntities!);

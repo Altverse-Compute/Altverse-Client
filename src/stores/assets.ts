@@ -1,20 +1,20 @@
-import type { ClientWorld } from "../types";
 import { create } from "zustand";
 import { ApiRequests } from "../api/requests";
+import type { http } from "../proto/generated/js";
 
 interface State {
-  worlds: Record<string, ClientWorld>;
+  worlds: Record<string, http.IWorldResponse>;
   loaded: boolean;
-  fetch: () => void;
+  fetch: (serverUrl: string) => void;
 }
 
 export const useAssetsStore = create<State>((set) => ({
   worlds: {},
   loaded: false,
-  fetch() {
-    // ApiRequests.worlds().then((worlds) => {
-    //   set({ worlds, loaded: true });
-    //   console.log(worlds);
-    // });
+  fetch(serverUrl) {
+    ApiRequests.worlds(serverUrl).then((worlds) => {
+      set({ worlds: worlds.worlds, loaded: true });
+      console.log(worlds);
+    });
   },
 }));

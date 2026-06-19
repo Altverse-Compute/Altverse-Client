@@ -31,10 +31,10 @@ export function useLeaderBoard() {
             ? v2.area - v1.area
             : -1
           : v2.world === players[selfId].world
-          ? v1.world === players[selfId].world
-            ? v2.area - v1.area
-            : 1
-          : 0) ||
+            ? v1.world === players[selfId].world
+              ? v2.area - v1.area
+              : 1
+            : 0) ||
         (v1.world === v2.world ? 0 : v1.world > v2.world ? 1 : -1) ||
         v2.area - v1.area
       );
@@ -48,7 +48,7 @@ export function useLeaderBoard() {
       let color;
       if (useAssetsStore.getState().worlds[element.world])
         color =
-          useAssetsStore.getState().worlds[element.world].client.fillStyle;
+          useAssetsStore.getState().worlds[element.world].properties!.fillStyle;
       else color = "#336655";
 
       let playersTo: PlayerInLeaderBoard = {
@@ -64,7 +64,7 @@ export function useLeaderBoard() {
       } else {
         outObject.push({
           name: element.world,
-          color: color,
+          color: color!,
           players: [playersTo],
         });
       }
