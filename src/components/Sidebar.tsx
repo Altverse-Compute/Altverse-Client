@@ -1,5 +1,6 @@
 import { Link } from "wouter";
 import { useAuthStore } from "../stores/auth.ts";
+import { http } from "../proto/generated/js/index";
 
 export const Sidebar = () => {
   const auth = useAuthStore();
@@ -7,6 +8,9 @@ export const Sidebar = () => {
   return (
     <div className={"flex p-2 bg-base-300 flex-col md:w-[350px]"}>
       <ul className="menu rounded-box w-full text-xl">
+        <li>
+          <Link href={"/dashboard"}>Welcome</Link>
+        </li>
         {auth.valid && (
           <>
             <li>
@@ -30,14 +34,16 @@ export const Sidebar = () => {
                 <li>
                   <Link href={"/dashboard/settings"}>Settings</Link>
                 </li>
+                {auth.profile!.role === http.AccountRole.ADMIN && (
+                  <li>
+                    <Link href={"/dashboard/admin"}>Admin Panel</Link>
+                  </li>
+                )}
               </ul>
             </li>
           </>
         )}
 
-        <li>
-          <Link href={"/dashboard"}>Welcome</Link>
-        </li>
         <li>
           <h2 className="menu-title flex gap-2 text-xl">
             <i class="bi bi-gear-fill"></i>Development

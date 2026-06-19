@@ -16,6 +16,9 @@
       "@components": ["./src/components"],
       "@stores": ["./src/stores"],
       "@resources": ["./src/resources"],
+      "react": ["./node_modules/preact/compat/dist/compat.d.ts"],
+      "react-dom": ["./node_modules/preact/compat/dist/compat.d.ts"],
+      "react/jsx-runtime": ["./node_modules/preact/compat/dist/compat.d.ts"]
     },
 
     /* Bundler mode */

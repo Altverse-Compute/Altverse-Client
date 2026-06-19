@@ -36,6 +36,8 @@ export const ProfileCard = (props: Props) => {
     switch (profile?.role) {
       case http.AccountRole.DEV:
         return <div className={"badge badge-primary text-xl"}>Dev</div>;
+      case http.AccountRole.ADMIN:
+        return <div className={"badge badge-primary text-xl"}>Dev</div>;
       case http.AccountRole.MOD:
         return <div className={"badge badge-secondary text-xl"}>Mod</div>;
     }

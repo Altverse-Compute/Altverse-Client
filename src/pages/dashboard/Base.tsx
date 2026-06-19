@@ -1,12 +1,12 @@
 export const Base = () => {
   return (
     <div className={"md:w-[700px] w-full text-xl flex flex-col gap-2 pt-4"}>
-      <h1 className={"text-center"}>Welcome to Altverse! Have fun!</h1>
+      <h1 className={"text-center text-2xl"}>Welcome to Altverse! Have fun!</h1>
       <p className={"alert alert-warning alert-soft text-xl"}>
         Due to the state of the game, registration of new accounts is done using
         a token.
       </p>
-      <h1 className={"divider text-3xl"}>A little about the game</h1>
+      <h1 className={"divider text-2xl"}>A little about the game</h1>
       <p>
         The game is inspired by another io game, the original game is called{" "}
         <a
@@ -29,7 +29,7 @@ export const Base = () => {
         </a>
         .{" "}
       </p>
-      <h1 className={"divider text-3xl"}>Game idea</h1>
+      <h1 className={"divider text-2xl"}>Game idea</h1>
       <p>
         The original idea of ​​the game was to make an alternative version of
         the original, with new content and features.

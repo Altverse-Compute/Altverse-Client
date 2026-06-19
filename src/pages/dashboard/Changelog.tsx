@@ -19,7 +19,7 @@ export const GameChangelog = () => {
   return (
     <div className={"w-full"}>
       <h1 className={"divider text-2xl"}>Changelog</h1>
-      <div className={"grid grid-cols-3 gap-4"}>
+      <div className={"grid md:grid-cols-3 grid-cols-1 gap-4"}>
         {changelog.map((v, i) => (
           <div
             className={
@@ -35,7 +35,7 @@ export const GameChangelog = () => {
               ))}
             </ul>
             <button
-              className={"btn"}
+              className={"btn text-lg"}
               onClick={() => {
                 modalRef.current?.showModal();
                 setChoosed(i);
@@ -47,7 +47,7 @@ export const GameChangelog = () => {
         ))}
       </div>
       <dialog className="modal" ref={modalRef}>
-        <div className="modal-box">
+        <div className="modal-box text-center grid grid-col gap-2">
           <h1 className={"text-xl text-center"}>{change.title}</h1>
           <h2 className={"text-xl text-center"}>{change.date}</h2>
           <ul className={"flex-1 overflow-hidden list-disc"}>
@@ -55,10 +55,15 @@ export const GameChangelog = () => {
               <li>{feature}</li>
             ))}
           </ul>
+          <button
+            className={"btn btn-active text-lg"}
+            onClick={() => {
+              modalRef.current?.close();
+            }}
+          >
+            Close
+          </button>
         </div>
-        <form method="dialog" className="modal-backdrop">
-          <button>close</button>
-        </form>
       </dialog>
     </div>
   );
