@@ -1,9 +1,10 @@
-import { keyboardEvents } from "./events/keyboard";
+import { keyboardEvents, localToProto } from "./events/keyboard";
 import { mouseEvents } from "./events/mouse";
 import { useGameStore } from "../stores/game";
 import { game } from "../proto/generated/js";
 import { Compress } from "./compress.ts";
 import Cookies from "js-cookie";
+import type { Writer } from "protobufjs";
 
 export class WebSocketConnection {
   open: boolean = false;
@@ -34,8 +35,8 @@ export class WebSocketConnection {
     this.ws = new WebSocket(api.replace("http", "ws"), ["permessage-deflate"]);
     this.ws.binaryType = "arraybuffer";
     this.ws.onopen = () => {
-      this.ws!.send(
-        JSON.stringify({
+      this.wrapAndSend(
+        game.ClientMessage.encode({
           init: {
             hero: "",
           },
@@ -64,21 +65,26 @@ export class WebSocketConnection {
     }, 1000);
   }
 
+  wrapAndSend(writer: Writer) {
+    if (this.ws && this.ws.readyState === WebSocket.OPEN)
+      this.ws!.send(Uint8Array.from(writer.finish()));
+  }
+
   link() {
-    mouseEvents.on("move", (event) => {
+    mouseEvents.on("move", (mousePos) => {
       if (this.open) {
-        this.ws!.send(
-          JSON.stringify({
-            mousePos: [event.x, event.y],
+        this.wrapAndSend(
+          game.ClientMessage.encode({
+            mousePos,
           }),
         );
       }
     });
-    mouseEvents.on("enable", (event) => {
+    mouseEvents.on("enable", (mouseEnable) => {
       if (this.open) {
-        this.ws!.send(
-          JSON.stringify({
-            mouseEnable: event,
+        this.wrapAndSend(
+          game.ClientMessage.encode({
+            mouseEnable,
           }),
         );
       }
@@ -86,15 +92,18 @@ export class WebSocketConnection {
     keyboardEvents.on("down", (key) => {
       if (this.open) {
         if (key === "first" || key === "second") {
-          this.ws!.send(
-            JSON.stringify({
-              ability: key,
+          this.wrapAndSend(
+            game.ClientMessage.encode({
+              ability:
+                key === "first"
+                  ? game.ClientAbility.FIRST
+                  : game.ClientAbility.SECOND,
             }),
           );
         } else if (key.indexOf("upgrade_") === -1)
-          this.ws!.send(
-            JSON.stringify({
-              keyDown: key,
+          this.wrapAndSend(
+            game.ClientMessage.encode({
+              keyDown: localToProto[key],
             }),
           );
       }
@@ -102,9 +111,9 @@ export class WebSocketConnection {
 
     keyboardEvents.on("up", (key) => {
       if (key.indexOf("upgrade_") === -1)
-        this.ws!.send(
-          JSON.stringify({
-            keyUp: key,
+        this.wrapAndSend(
+          game.ClientMessage.encode({
+            keyUp: localToProto[key],
           }),
         );
     });
