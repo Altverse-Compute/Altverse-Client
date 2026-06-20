@@ -1,4 +1,4 @@
 export const config = {
-  api: "https://localhost/service",
+  api: "http://localhost:7001",
   changelog: [["New entitites"]],
 };

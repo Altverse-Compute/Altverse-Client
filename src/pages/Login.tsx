@@ -75,12 +75,15 @@ export const Login = () => {
           />
           <button
             class={"btn btn-accent btn-lg"}
-            onClick={() => {
-              auth.login({
-                username: username.current,
-                password: password.current,
-              });
+            onClick={async () => {
               validate();
+              if (usernameError || passwordError) return;
+              setError(
+                await auth.login({
+                  username: username.current,
+                  password: password.current,
+                }),
+              );
             }}
           >
             Join
@@ -91,7 +94,7 @@ export const Login = () => {
 
           <div>
             {error.length > 0 && (
-              <div className={"text-xl alert alert-error alert-soft max-w-lg"}>
+              <div className={"text-xl alert alert-error alert-soft max-w-80"}>
                 {error}
               </div>
             )}

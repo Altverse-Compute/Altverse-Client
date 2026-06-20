@@ -1,0 +1,81 @@
+import { useEffect, useRef, useState } from "preact/hooks";
+import { http } from "../../proto/generated/js";
+import { Badge } from "../../components/basic/Badge";
+import { Card } from "../../components/basic/Card";
+import { AdminEditServerModal } from "../../components/admin/EditModal";
+import { AdminAddServerModal } from "../../components/admin/AddModal";
+import { ApiRequests } from "../../api/requests";
+import { useAuthStore } from "../../stores/auth";
+import { AdminTokenModal } from "./TokenModal";
+
+export const AdminServerList = () => {
+  const modalEditServerRef = useRef<HTMLDialogElement | null>(null);
+  const modalCreateServerRef = useRef<HTMLDialogElement | null>(null);
+  const [selectedServer, setSelectedServer] = useState<http.IAdminModeServer>();
+  const [servers, setServers] = useState<http.IAdminModeServersResponse>();
+  const auth = useAuthStore();
+
+  useEffect(() => {
+    const fetchServers = async () => {
+      const servers = await ApiRequests.adminServers();
+      if (servers.status === http.ResponseStatus.Ok) {
+        setServers(servers);
+        console.log(servers);
+      } else {
+        console.error(servers.status);
+      }
+    };
+    if (auth.loaded) fetchServers();
+  }, [auth.loaded]);
+
+  const selectServer = (index: number) => {
+    setSelectedServer(servers?.servers![index]);
+  };
+
+  return (
+    <>
+      <div className={"w-full flex justify-between"}>
+        <Badge text={`Servers Online: ${servers?.online}/${servers?.count}`} />
+        <button
+          className={"btn btn-lg btn-success"}
+          onClick={() => {
+            modalCreateServerRef.current?.showModal();
+          }}
+        >
+          Add Server
+        </button>
+      </div>
+      <div className={"grid md:grid-cols-2 gap-5 "}>
+        {servers?.servers!.map((server, index) => (
+          <Card size={"sm"}>
+            <div className={"flex flex-row justify-between"}>
+              <div>
+                <div className={"flex items-center"}>
+                  <h1 className={"text-3xl w-10"}>{server.icon}</h1>
+                  <div>
+                    <h1 className={"text-2xl"}>{server.name}</h1>
+                  </div>
+                </div>
+                <p className={"text-md"}>{server.domain}</p>
+              </div>
+              <button
+                className={"btn btn-lg btn-primary"}
+                onClick={() => {
+                  selectServer(index);
+                  modalEditServerRef.current?.showModal();
+                }}
+              >
+                Edit
+              </button>
+            </div>
+          </Card>
+        ))}
+      </div>
+      <AdminEditServerModal
+        selectedServer={selectedServer}
+        modalRef={modalEditServerRef}
+      />
+      <AdminAddServerModal modalRef={modalCreateServerRef} />
+    </>
+  );
+};

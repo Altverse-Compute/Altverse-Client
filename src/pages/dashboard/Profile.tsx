@@ -1,5 +1,5 @@
 import { ProfileCard } from "../../components/Profile.tsx";
-import { useState } from "preact/hooks";
+import { useEffect, useState } from "preact/hooks";
 import { TextField } from "../../components/basic/TextField.tsx";
 import { Breadcrumbls } from "../../components/basic/Breadcrumbls.tsx";
 import { useAuthStore } from "../../stores/auth.ts";
@@ -8,6 +8,15 @@ export const GameProfile = () => {
   const [username, setUsername] = useState(
     useAuthStore().profile?.username + "",
   );
+
+  const auth = useAuthStore();
+
+  useEffect(() => {
+    if (auth.profile && auth.profile.username) {
+      setUsername(auth.profile.username);
+      console.log(auth.profile);
+    }
+  }, [auth.profile?.username]);
 
   return (
     <div className={"md:w-[700px] w-full text-2xl flex flex-col gap-2 pt-4"}>

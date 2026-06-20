@@ -1,3 +1,4 @@
+import { http } from "./proto/generated/js";
 import type { WorldEffect } from "./proto/generated/ts/http/WorldEffect";
 
 export interface AssetsWorld {
@@ -18,3 +19,16 @@ export interface Assets {
   zones: Record<string, AssetsZone>;
   entities: Array<AssetsEntity>;
 }
+
+export const errorsAndStatusAlias: Record<http.ResponseStatus, string> = {
+  [http.ResponseStatus.Ok]: "Ok",
+  [http.ResponseStatus.AccountExists]: "Account already exists",
+  [http.ResponseStatus.AccountNotExists]: "Account does not exist",
+  [http.ResponseStatus.InternalError]:
+    "Server has encountered an internal error",
+  [http.ResponseStatus.InvalidBody]: "Error with building the request body",
+  [http.ResponseStatus.NotFound]: "Not found",
+  [http.ResponseStatus.VerificationFailure]: "Verification failure",
+  [http.ResponseStatus.NotAuthenticated]: "Not authenticated",
+  [http.ResponseStatus.WrongPassword]: "Wrong password",
+};

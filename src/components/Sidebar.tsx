@@ -34,11 +34,12 @@ export const Sidebar = () => {
                 <li>
                   <Link href={"/dashboard/settings"}>Settings</Link>
                 </li>
-                {auth.profile!.role === http.AccountRole.ADMIN && (
-                  <li>
-                    <Link href={"/dashboard/admin"}>Admin Panel</Link>
-                  </li>
-                )}
+                {auth.profile &&
+                  auth.profile.role === http.AccountRole.ADMIN && (
+                    <li>
+                      <Link href={"/dashboard/admin"}>Admin Panel</Link>
+                    </li>
+                  )}
               </ul>
             </li>
           </>

@@ -11,7 +11,7 @@
         "lz4js": "^0.2.0",
         "mitt": "^3.0.1",
         "preact": "^10.27.2",
-        "protobufjs": "^7.5.4",
+        "protobufjs": "7.5.4",
         "snappyjs": "^0.7.0",
         "wouter": "^3.8.1",
         "zustand": "^5.0.9",

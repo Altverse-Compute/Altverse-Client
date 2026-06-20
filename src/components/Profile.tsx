@@ -9,7 +9,7 @@ interface Props {
 
 export const ProfileCard = (props: Props) => {
   const [profile, setProfile] = useState<http.IProfile>();
-  const [error, setError] = useState(false);
+  const [status, setStatus] = useState<http.ResponseStatus | undefined>();
   const timeout = useRef<NodeJS.Timeout>();
   useEffect(() => {
     const fetch = async () => {
@@ -22,9 +22,9 @@ export const ProfileCard = (props: Props) => {
         ) {
           setProfile(value!.profile!);
           console.log(value.profile);
-          setError(false);
+          setStatus(value.status);
         } else {
-          setError(true);
+          setStatus(value.status);
         }
       }
     };
@@ -43,12 +43,22 @@ export const ProfileCard = (props: Props) => {
     }
   };
 
-  if (error)
-    return (
-      <div className={"w-full alert alert-error alert-soft text-xl"}>
-        Profile is not found
-      </div>
-    );
+  if (status !== http.ResponseStatus.Ok) {
+    switch (status) {
+      case http.ResponseStatus.NotFound:
+        return (
+          <div className={"w-full alert alert-error alert-soft text-xl"}>
+            Profile is not found
+          </div>
+        );
+      default:
+        return (
+          <div className={"w-full alert alert-error alert-soft text-xl"}>
+            An error occurred while fetching the profile
+          </div>
+        );
+    }
+  }
 
   return (
     <div className={"w-full"}>
