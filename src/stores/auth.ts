@@ -3,12 +3,12 @@ import { persist } from "zustand/middleware";
 import { type LoginProps, type RegisterProps } from "../api/types";
 import { ApiRequests } from "../api/requests";
 import Cookies from "js-cookie";
-import { http } from "../proto/generated/js";
+import * as http from "@proto/http_pb";
 import { errorsAndStatusAlias } from "../types";
 
 export interface AuthState {
   valid: boolean | undefined;
-  profile?: http.IProfile;
+  profile?: http.Profile;
   loaded: boolean;
 
   validate: () => void;
@@ -59,7 +59,6 @@ export const useAuthStore = create(
         ApiRequests.logout();
         Cookies.remove("token");
         set({ valid: false });
-        // console.log("logout");
       },
     }),
     {

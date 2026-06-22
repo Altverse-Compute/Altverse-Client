@@ -4,7 +4,7 @@ export const Notifications = () => {
   const { notifications } = useNotificationsStore();
 
   return (
-    <div className={"absolute right-2 top-2 grid grid-col-1 gap-2 z-10"}>
+    <div className={"absolute right-0 top-0 grid grid-col-1 gap-2 z-100"}>
       {notifications.map((value) => (
         <>
           <div className={"p-5 rounded-2xl bg-" + value.type}>

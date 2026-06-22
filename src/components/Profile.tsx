@@ -1,31 +1,27 @@
 import { Card } from "./basic/Card.tsx";
 import { useEffect, useRef, useState } from "preact/hooks";
 import { ApiRequests } from "../api/requests.ts";
-import { http } from "../proto/generated/js/index";
+import * as http from "@proto/http_pb";
 
 interface Props {
   username?: string;
 }
 
 export const ProfileCard = (props: Props) => {
-  const [profile, setProfile] = useState<http.IProfile>();
+  const [profile, setProfile] = useState<http.Profile>();
   const [status, setStatus] = useState<http.ResponseStatus | undefined>();
   const timeout = useRef<NodeJS.Timeout>();
   useEffect(() => {
     const fetch = async () => {
       if (props.username) {
         const value = await ApiRequests.profile(props.username);
-        console.log(value);
-        if (
-          value.status !== http.ResponseStatus.NotFound &&
-          value.profile != null
-        ) {
+        if (value.status === http.ResponseStatus.Ok && value.profile != null) {
           setProfile(value!.profile!);
-          console.log(value.profile);
           setStatus(value.status);
         } else {
           setStatus(value.status);
         }
+        console.log(value.status);
       }
     };
     clearTimeout(timeout.current);

@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { http } from "../../proto/generated/js";
+import * as http from "@proto/http_pb";
 import type { RefObject } from "preact";
 import { useNotificationsStore } from "../../stores/notification";
 import { AdminTokenModal } from "./TokenModal";
 import { ApiRequests } from "../../api/requests";
+import { useAdminModeStore } from "../../stores/admin";
+import { create } from "@bufbuild/protobuf";
 
 interface Props {
-  selectedServer: http.IAdminModeServer | null | undefined;
+  selectedServer: http.AdminModeServer | null | undefined;
   modalRef: RefObject<HTMLDialogElement>;
 }
 
@@ -18,7 +20,9 @@ export const AdminEditServerModal = ({ selectedServer, modalRef }: Props) => {
   const notifications = useNotificationsStore();
   const tokenModalRef = useRef<HTMLDialogElement>(null);
 
-  useEffect(() => {
+  const { fetchServers } = useAdminModeStore();
+
+  const modalCloseEvent = (event: Event) => {
     if (
       selectedServer != undefined &&
       selectedServer !== null &&
@@ -29,6 +33,24 @@ export const AdminEditServerModal = ({ selectedServer, modalRef }: Props) => {
       nameInput.current!.value = selectedServer.name! + "";
       domainInput.current!.value = selectedServer.domain! + "";
       iconInput.current!.value = selectedServer.icon! + "";
+      setToken("");
+    }
+  };
+
+  useEffect(() => {
+    if (
+      selectedServer != undefined &&
+      selectedServer !== null &&
+      nameInput.current &&
+      domainInput.current &&
+      iconInput.current
+    ) {
+      modalRef.current!.removeEventListener("close", modalCloseEvent);
+      nameInput.current!.value = selectedServer.name! + "";
+      domainInput.current!.value = selectedServer.domain! + "";
+      iconInput.current!.value = selectedServer.icon! + "";
+      setToken("");
+      modalRef.current!.addEventListener("close", modalCloseEvent);
     }
   }, [selectedServer]);
 
@@ -44,6 +66,7 @@ export const AdminEditServerModal = ({ selectedServer, modalRef }: Props) => {
                 class="input w-full text-lg text-primary"
                 type="text"
                 placeholder="Great Server"
+                maxLength={16}
                 ref={nameInput}
               />
             </label>
@@ -53,6 +76,7 @@ export const AdminEditServerModal = ({ selectedServer, modalRef }: Props) => {
                 class="input w-full text-lg text-primary"
                 type="text"
                 placeholder="localhost:7002"
+                maxLength={32}
                 ref={domainInput}
               />
             </label>
@@ -62,6 +86,7 @@ export const AdminEditServerModal = ({ selectedServer, modalRef }: Props) => {
                 class="input w-full text-lg  text-primary"
                 type="text"
                 placeholder="X"
+                maxLength={10}
                 ref={iconInput}
               />
             </label>
@@ -85,21 +110,24 @@ export const AdminEditServerModal = ({ selectedServer, modalRef }: Props) => {
             <button
               className={"btn btn-lg btn-primary"}
               onClick={async () => {
-                modalRef.current?.close();
-                const result = await ApiRequests.adminServerEdit({
-                  id: selectedServer?.id ?? "",
-                  domain: domainInput.current?.value ?? "",
-                  icon: iconInput.current?.value ?? "",
-                  name: nameInput.current?.value ?? "",
-                  token: token.length === 0 ? undefined : token,
-                });
-                a;
-                if (result.status === http.ResponseStatus.Ok)
+                const result = await ApiRequests.adminServerEdit(
+                  create(http.AdminModeEditServerRequestSchema, {
+                    id: selectedServer?.id ?? "",
+                    domain: domainInput.current?.value ?? "",
+                    icon: iconInput.current?.value ?? "",
+                    name: nameInput.current?.value ?? "",
+                    token: token.length === 0 ? undefined : token,
+                  }),
+                );
+                if (result.status === http.ResponseStatus.Ok) {
                   notifications.addNotification({
                     message: "Server successfully edited",
                     title: "Server Edit",
                     type: "success",
                   });
+                  fetchServers();
+                }
+                modalRef.current?.close();
               }}
             >
               Update

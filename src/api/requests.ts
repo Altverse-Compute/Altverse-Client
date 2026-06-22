@@ -1,7 +1,8 @@
 import { config } from "../config";
 import type { RegisterProps, LoginProps, AdminEditServerProps } from "./types";
-import { http } from "../proto/generated/js";
 import { useAuthStore } from "../stores/auth";
+import * as http from "@proto/http_pb";
+import { fromBinary, type DescMessage, type Message } from "@bufbuild/protobuf";
 
 type ApiResponse<T> = T & { status: http.ResponseStatus };
 
@@ -13,7 +14,7 @@ export class ApiRequests {
     return this.handleErrorResponse(
       response,
       await response.bytes(),
-      http.LoginAndRegisterResponse,
+      http.LoginAndRegisterResponseSchema,
     );
   }
 
@@ -24,7 +25,7 @@ export class ApiRequests {
     return this.handleErrorResponse(
       response,
       await response.bytes(),
-      http.LoginAndRegisterResponse,
+      http.LoginAndRegisterResponseSchema,
     );
   }
 
@@ -33,7 +34,7 @@ export class ApiRequests {
     return this.handleErrorResponse(
       response,
       await response.bytes(),
-      http.AuthResponse,
+      http.AuthResponseSchema,
     );
   }
 
@@ -41,16 +42,22 @@ export class ApiRequests {
     username: string,
   ): Promise<ApiResponse<http.ProfileResponse>> {
     const response = await ApiRequests.get("/profile/" + username);
+    const bytes = await response.bytes();
+    console.log(bytes);
     return this.handleErrorResponse(
       response,
-      await response.bytes(),
-      http.ProfileResponse,
+      bytes,
+      http.ProfileResponseSchema,
     );
   }
 
-  public static async servers(): Promise<http.ServersResponse> {
+  public static async servers(): Promise<ApiResponse<http.ServersResponse>> {
     const response = await ApiRequests.get("/servers");
-    return http.ServersResponse.decode(await response.bytes());
+    return this.handleErrorResponse(
+      response,
+      await response.bytes(),
+      http.ServersResponseSchema,
+    );
   }
 
   public static async logout(): Promise<ApiResponse<http.LogoutResponse>> {
@@ -58,7 +65,7 @@ export class ApiRequests {
     return this.handleErrorResponse(
       response,
       await response.bytes(),
-      http.LogoutResponse,
+      http.LogoutResponseSchema,
     );
   }
 
@@ -67,18 +74,18 @@ export class ApiRequests {
   > {
     if (useAuthStore.getState().profile?.role !== http.AccountRole.ADMIN)
       return {
-        ...http.AdminModeServersResponse.create({
+        ...({
           servers: [],
           online: 0,
           count: 0,
-        }),
+        } as unknown as Message<"altverse.game.http.v1.AdminModeServersResponse">),
         status: http.ResponseStatus.NotAuthenticated,
       };
     const response = await ApiRequests.get("/admin/servers", undefined);
     return this.handleErrorResponse(
       response,
       await response.bytes(),
-      http.AdminModeServersResponse,
+      http.AdminModeServersResponseSchema,
     );
   }
 
@@ -89,14 +96,21 @@ export class ApiRequests {
     return this.handleErrorResponse(
       response,
       await response.bytes(),
-      http.AdminModeServerTokenResponse,
+      http.AdminModeServerTokenResponseSchema,
     );
   }
 
   public static async adminServerEdit(
-    props: http.IAdminModeEditServerRequest,
-  ): Promise<ApiResponse<Object>> {
+    props: http.AdminModeEditServerRequest,
+  ): Promise<ApiResponse<any>> {
     const response = await ApiRequests.post("/admin/servers/edit", props);
+    return { status: response.status };
+  }
+
+  public static async adminServerAdd(
+    props: http.AdminModeAddServerRequest,
+  ): Promise<ApiResponse<any>> {
+    const response = await ApiRequests.post("/admin/servers/add", props);
     return { status: response.status };
   }
 
@@ -108,24 +122,27 @@ export class ApiRequests {
       withCredentials: true,
       body: undefined,
     });
-    return http.WorldsResponse.decode(await response.bytes());
+    return this.handleErrorResponse(
+      response,
+      await response.bytes(),
+      http.WorldsResponseSchema,
+    );
   }
 
-  private static handleErrorResponse<
-    Decoder extends {
-      create: (obj: object) => Result;
-      decode: (bytes: Uint8Array) => Result;
-    },
-    Result,
-  >(
+  private static handleErrorResponse(
     response: Response,
     bytes: Uint8Array,
-    object: Decoder,
-  ): ApiResponse<Result> {
-    if (Object.keys(http.ResponseStatus).includes(response.status.toString())) {
-      return { ...object.decode(bytes), status: response.status };
+    schema: DescMessage,
+  ): ApiResponse<Message<any>> {
+    for (const index of Object.keys(http.ResponseStatus)) {
+      if (
+        (http.ResponseStatus[index as any as number] as any as number) ===
+        response.status
+      ) {
+        return { ...fromBinary(schema, bytes), status: response.status };
+      }
     }
-    return { ...object.decode(bytes), status: http.ResponseStatus.Ok };
+    return { ...fromBinary(schema, bytes), status: http.ResponseStatus.Ok };
   }
 
   private static post = (

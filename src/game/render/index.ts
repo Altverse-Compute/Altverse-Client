@@ -5,7 +5,8 @@ import Camera from "../storages/camera";
 import Entity from "../units/entity";
 import { Leaf } from "./entities/leaf";
 import { useAssetsStore } from "../../stores/assets";
-import { http } from "../../proto/generated/js";
+import * as http from "@proto/http_pb";
+import { create } from "@bufbuild/protobuf";
 
 export const customEntities: Record<string, typeof Entity> = {
   leaf: Leaf,
@@ -98,14 +99,14 @@ export class Render {
     let isContain = Object.keys(useAssetsStore.getState().worlds).includes(
       gameState.world,
     );
-    let world: http.IWorldProperties;
+    let world: http.WorldProperties;
     if (!isContain)
-      world = {
+      world = create(http.WorldPropertiesSchema, {
         fillStyle: "#fff",
         strokeStyle: "#ccc",
         areaFill: "#ccc",
         effect: http.WorldEffect.AUTUMN,
-      };
+      });
     else world = useAssetsStore.getState().worlds![gameState.world].properties!;
     return world;
   }

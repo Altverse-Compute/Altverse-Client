@@ -1,16 +1,19 @@
 import { useEffect } from "preact/hooks";
 import { useAuthStore } from "../../stores/auth";
 import { navigate } from "wouter/use-browser-location";
-import { http } from "../../proto/generated/js";
+import * as http from "@proto/http_pb";
 import { AdminServerList } from "../../components/admin/ServerList";
+import { useAdminModeStore } from "../../stores/admin";
 
 export const AdminPanel = () => {
   const auth = useAuthStore();
+  const adminMode = useAdminModeStore();
 
   useEffect(() => {
     if (auth.loaded)
       if (auth.valid && auth.profile!.role !== http.AccountRole.ADMIN)
         navigate("/dashboard");
+      else adminMode.fetchServers();
   }, [auth.loaded, auth.valid]);
 
   return (

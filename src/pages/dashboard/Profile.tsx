@@ -14,7 +14,6 @@ export const GameProfile = () => {
   useEffect(() => {
     if (auth.profile && auth.profile.username) {
       setUsername(auth.profile.username);
-      console.log(auth.profile);
     }
   }, [auth.profile?.username]);
 

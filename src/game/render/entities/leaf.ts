@@ -1,7 +1,7 @@
 import AssetLoader from "../../storages/assets";
 import Camera from "../../storages/camera";
 import Entity from "../../units/entity";
-import { game } from "../../../proto/generated/js";
+import * as game from "@proto/game_pb";
 
 const arr = [AssetLoader.images.leaf, AssetLoader.images.leaf2];
 
@@ -24,7 +24,7 @@ export class Leaf extends Entity {
       pos.x - size / 2,
       pos.y - size / 2,
       size,
-      size
+      size,
     );
     ctx.globalAlpha = 1;
     ctx.closePath();

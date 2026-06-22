@@ -1,7 +1,7 @@
 import { Maven } from "./render/hero/maven";
 import Entity from "./units/entity";
 import { Leaf } from "./render/entities/leaf";
-import { game } from "../proto/generated/js";
+import * as game from "@proto/game_pb";
 
 // type PlayerConstructor = new (props: PackedPlayer) => Player;
 //
@@ -14,12 +14,12 @@ const entities: Record<number, typeof Entity> = {
 };
 
 export class Spawn {
-  static player(pkg: game.IPackedPlayer) {
+  static player(pkg: game.PackedPlayer) {
     // const hero = heroes[pkg.hero];
     // const player = new hero(pkg);
     return new Maven(pkg);
   }
-  static entity(pkg: game.IPackedEntity) {
+  static entity(pkg: game.PackedEntity) {
     const ent = entities[pkg.typeId ?? 0];
     if (ent) return new ent(pkg);
     return new Entity(pkg);

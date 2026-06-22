@@ -1,8 +1,7 @@
-import { http } from "./proto/generated/js";
-import type { WorldEffect } from "./proto/generated/ts/http/WorldEffect";
+import * as http from "@proto/http_pb";
 
 export interface AssetsWorld {
-  effect?: WorldEffect;
+  effect?: http.WorldEffect;
   backgrounds?: Array<[string, number]>;
   fillColor: string;
   fillAlpha: number;
@@ -31,4 +30,5 @@ export const errorsAndStatusAlias: Record<http.ResponseStatus, string> = {
   [http.ResponseStatus.VerificationFailure]: "Verification failure",
   [http.ResponseStatus.NotAuthenticated]: "Not authenticated",
   [http.ResponseStatus.WrongPassword]: "Wrong password",
+  [http.ResponseStatus.Trouble]: "",
 };

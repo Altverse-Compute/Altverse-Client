@@ -1,5 +1,5 @@
 import mitt from "mitt";
-import { game } from "../../proto/generated/js";
+import * as game from "@proto/game_pb";
 
 export type Keys =
   | "up"

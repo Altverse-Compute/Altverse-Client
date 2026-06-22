@@ -1,6 +1,6 @@
 import Camera from "../storages/camera";
 import MaxContainer from "./maxcur";
-import { game } from "../../proto/generated/js";
+import * as game from "@proto/game_pb";
 
 export abstract class Player {
   x: number;
@@ -26,10 +26,10 @@ export abstract class Player {
 
   abstract color: string;
 
-  constructor(props: game.IPackedPlayer) {
-    this.x = props.x ? props.x  / 2 : 0;
+  constructor(props: game.PackedPlayer) {
+    this.x = props.x ? props.x / 2 : 0;
     this.y = props.y ? props.y / 2 : 0;
-    this.dt = props.deathTimer  ?? 60;
+    this.dt = props.deathTimer ?? 60;
     this.id = props.id ?? 0;
     this.name = props.name ?? "";
     this.area = props.area ?? 0;
@@ -38,8 +38,8 @@ export abstract class Player {
     this.regen = new MaxContainer(1, 7);
     this.speed = new MaxContainer(props.speed ?? 5, 17);
     this.energy = new MaxContainer(props.energy ?? 0, props.maxEnergy ?? 0);
-    this.radius = props.radius ?props.radius / 2 : 15;
-    this.state = props.state ?? 0 ;
+    this.radius = props.radius ? props.radius / 2 : 15;
+    this.state = props.state ?? 0;
     this.stateMeta = props.stateMeta ?? 0 / 10;
     this.hero = props.hero ?? 0;
   }
@@ -70,7 +70,7 @@ export abstract class Player {
       Camera.h / 2 + (this.y - Camera.y) * Camera.s,
       this.radius * Camera.s,
       0,
-      Math.PI * 2
+      Math.PI * 2,
     );
     ctx.fill();
     if (this.died) {
@@ -89,7 +89,7 @@ export abstract class Player {
       pos.x - 18 * Camera.s,
       pos.y - (this.radius + 8) * Camera.s,
       36 * (this.energy.cur / this.energy.max) * Camera.s,
-      7 * Camera.s
+      7 * Camera.s,
     );
     ctx.strokeStyle = "rgb(68, 118, 225)";
     ctx.lineWidth = 2;
@@ -97,7 +97,7 @@ export abstract class Player {
       pos.x - 18 * Camera.s,
       pos.y - (this.radius + 8) * Camera.s,
       36 * Camera.s,
-      7 * Camera.s
+      7 * Camera.s,
     );
     ctx.closePath();
 
@@ -113,12 +113,12 @@ export abstract class Player {
 
   abstract renderMeta(
     ctx: CanvasRenderingContext2D,
-    renderPos: { x: number; y: number }
+    renderPos: { x: number; y: number },
   ): void;
 
-  accept(props: game.IPartialPlayer) {
-    if (props == null) return
-  this.x = props.x ? props.x / 2 : this.x;
+  accept(props: game.PartialPlayer) {
+    if (props == null) return;
+    this.x = props.x ? props.x / 2 : this.x;
     this.y = props.y ? props.y / 2 : this.y;
     // if (props.x) {
     // if (Math.abs(props.x) < 34.0) {
@@ -142,6 +142,6 @@ export abstract class Player {
     this.dt = props.deathTimer ? props.deathTimer : this.dt;
     this.died = props.died !== null ? props.died : this.died;
     this.state = props.state ?? this.state;
-    this.stateMeta = props.stateMeta ? props.stateMeta / 2 : this.stateMeta
+    this.stateMeta = props.stateMeta ? props.stateMeta / 2 : this.stateMeta;
   }
 }

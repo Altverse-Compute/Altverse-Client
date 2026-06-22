@@ -5,7 +5,7 @@ import Zone from "../game/units/zone";
 import { Spawn } from "../game/spawner";
 import { useKeyboard } from "./keyboard";
 import { useMouseStore } from "./mouse";
-import { game } from "../proto/generated/js";
+import * as game from "@proto/game_pb";
 
 export interface GameState {
   areaBoundary: { w: number; h: number };
@@ -37,20 +37,20 @@ export interface ShortPlayer {
 interface State {
   selfId: number;
   players: Record<string, ShortPlayer>;
-  messages: Array<game.IChat>;
+  messages: Array<game.Chat>;
   isGameInit: boolean;
   reason?: string;
 
-  message(data: game.IChat): void;
-  uplayers(data: game.IPlayers): void;
-  self(data: game.IPackedPlayer): void;
-  areaInit(data: game.IPackedArea): void;
-  newPlayer(data: game.IPackedPlayer): void;
-  closePlayer(data: number | Long | null | undefined): void;
-  updatePlayers(data: game.IUpdatePlayersMap): void;
-  newEntities(data: Record<number, game.IPackedEntity>): void;
-  updateEntities(data: game.IUpdateEntitiesMap): void;
-  closeEntities(data: number[]): void;
+  message(data: game.Chat): void;
+  uplayers(data: game.Players): void;
+  self(data: game.PackedPlayer): void;
+  areaInit(data: game.PackedArea): void;
+  newPlayer(data: game.PackedPlayer): void;
+  closePlayer(data: number | BigInt | null | undefined): void;
+  updatePlayers(data: game.UpdatePlayersMap): void;
+  newEntities(data: Record<number, game.PackedEntity>): void;
+  updateEntities(data: game.UpdateEntitiesMap): void;
+  closeEntities(data: game.CloseEntities): void;
   close(reason: string): void;
   clear(): void;
 }
@@ -126,7 +126,7 @@ export const useGameStore = create<State>((set, get) => ({
     ];
     // else
     gameState.zones = [
-      ...(data.area === 0
+      ...(data.area === BigInt(0)
         ? [
             new Zone({
               x: -10 * 32,
@@ -190,7 +190,7 @@ export const useGameStore = create<State>((set, get) => ({
     ];
 
     gameState.world = data.world!;
-    gameState.area = data.area! as number;
+    gameState.area = Number(data.area!);
     gameState.areaBoundary = {
       w: data.w!,
       h: data.h!,
@@ -258,7 +258,7 @@ export const useGameStore = create<State>((set, get) => ({
     }
   },
   closeEntities(data) {
-    for (const i of data) {
+    for (const i of data.ids) {
       delete gameState.entities[i];
     }
   },

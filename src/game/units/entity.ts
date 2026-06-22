@@ -1,6 +1,6 @@
 import Camera from "../storages/camera";
 import { GlobalAssets } from "../../assets";
-import { game } from "../../proto/generated/js";
+import * as game from "@proto/game_pb";
 
 export default class Entity {
   harmless: boolean;
@@ -12,15 +12,15 @@ export default class Entity {
   state: number;
   stateMetadata: number;
 
-  constructor(props: game.IPackedEntity) {
+  constructor(props: game.PackedEntity) {
     this.x = (props.x ?? 0) / 2;
-    this.y = (props.y  ?? 0 ) / 2;
+    this.y = (props.y ?? 0) / 2;
     this.type = props.typeId ?? 0;
-    this.radius = (props.radius ?? 0 )/ 2;
+    this.radius = (props.radius ?? 0) / 2;
     this.harmless = props.harmless ?? false;
     this.alpha = (props.alpha ?? 0) / 20;
     this.state = props.state ?? 0;
-    this.stateMetadata = (props.stateMetadata  ?? 0) / 2;
+    this.stateMetadata = (props.stateMetadata ?? 0) / 2;
   }
 
   draw(ctx: CanvasRenderingContext2D, _: number) {
@@ -51,17 +51,17 @@ export default class Entity {
         Camera.h / 2 + (this.y - Camera.y) * Camera.s,
         this.stateMetadata * Camera.s,
         0,
-        Math.PI * 2
+        Math.PI * 2,
       );
     ctx.fill();
     ctx.globalAlpha = 1;
     ctx.closePath();
   }
 
-  accept(props: game.IPackedEntity) {
-    this.x = props.x ? (props.x / 2): this.x;
-    this.y = props.y ? (props.y / 2): this.y;
-    this.radius = props.radius ?  (props.radius / 2) : this.radius;
+  accept(props: game.PackedEntity) {
+    this.x = props.x ? props.x / 2 : this.x;
+    this.y = props.y ? props.y / 2 : this.y;
+    this.radius = props.radius ? props.radius / 2 : this.radius;
     this.harmless = props.harmless ?? this.harmless;
     this.alpha = props.alpha != null ? props.alpha / 20 : this.alpha;
   }

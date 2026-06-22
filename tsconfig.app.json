@@ -13,6 +13,7 @@
       "@hooks": ["./src/hooks"],
       "@game": ["./src/game"],
       "@pages": ["./src/pages"],
+      "@proto/*": ["./src/proto/gen/*"],
       "@components": ["./src/components"],
       "@stores": ["./src/stores"],
       "@resources": ["./src/resources"],
@@ -37,5 +38,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/proto/**/*.ts"]
 }

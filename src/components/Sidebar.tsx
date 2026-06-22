@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { useAuthStore } from "../stores/auth.ts";
-import { http } from "../proto/generated/js/index";
+import * as http from "@proto/http_pb";
 
 export const Sidebar = () => {
   const auth = useAuthStore();

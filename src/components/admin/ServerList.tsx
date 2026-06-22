@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "preact/hooks";
-import { http } from "../../proto/generated/js";
+import type * as http from "@proto/http_pb.ts";
 import { Badge } from "../../components/basic/Badge";
 import { Card } from "../../components/basic/Card";
 import { AdminEditServerModal } from "../../components/admin/EditModal";
@@ -7,26 +7,14 @@ import { AdminAddServerModal } from "../../components/admin/AddModal";
 import { ApiRequests } from "../../api/requests";
 import { useAuthStore } from "../../stores/auth";
 import { AdminTokenModal } from "./TokenModal";
+import { useAdminModeStore } from "../../stores/admin";
 
 export const AdminServerList = () => {
   const modalEditServerRef = useRef<HTMLDialogElement | null>(null);
   const modalCreateServerRef = useRef<HTMLDialogElement | null>(null);
-  const [selectedServer, setSelectedServer] = useState<http.IAdminModeServer>();
-  const [servers, setServers] = useState<http.IAdminModeServersResponse>();
+  const [selectedServer, setSelectedServer] = useState<http.AdminModeServer>();
+  const { servers } = useAdminModeStore();
   const auth = useAuthStore();
-
-  useEffect(() => {
-    const fetchServers = async () => {
-      const servers = await ApiRequests.adminServers();
-      if (servers.status === http.ResponseStatus.Ok) {
-        setServers(servers);
-        console.log(servers);
-      } else {
-        console.error(servers.status);
-      }
-    };
-    if (auth.loaded) fetchServers();
-  }, [auth.loaded]);
 
   const selectServer = (index: number) => {
     setSelectedServer(servers?.servers![index]);
