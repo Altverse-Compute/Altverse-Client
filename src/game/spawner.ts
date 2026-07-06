@@ -1,7 +1,7 @@
 import { Maven } from "./render/hero/maven";
 import Entity from "./units/entity";
 import { Leaf } from "./render/entities/leaf";
-import * as game from "@proto/game_pb";
+import type { AltverseServer } from "@proto/game";
 
 // type PlayerConstructor = new (props: PackedPlayer) => Player;
 //
@@ -14,13 +14,13 @@ const entities: Record<number, typeof Entity> = {
 };
 
 export class Spawn {
-  static player(pkg: game.PackedPlayer) {
+  static player(pkg: AltverseServer.PackedPlayer) {
     // const hero = heroes[pkg.hero];
     // const player = new hero(pkg);
     return new Maven(pkg);
   }
-  static entity(pkg: game.PackedEntity) {
-    const ent = entities[pkg.typeId ?? 0];
+  static entity(pkg: AltverseServer.PackedEntity) {
+    const ent = entities[Number(pkg.typeId())];
     if (ent) return new ent(pkg);
     return new Entity(pkg);
   }
