@@ -85,6 +85,7 @@ export const useGameStore = create<State>((set, get) => ({
     }
   },
   self(data) {
+    console.log(data);
     set({ selfId: data.id!, isGameInit: true });
     gameState.players[data.id!] = Spawn.player(data as game.PackedPlayer);
   },
@@ -220,9 +221,8 @@ export const useGameStore = create<State>((set, get) => ({
     }
   },
   updatePlayers(data) {
-    for (const p in data) {
-      //@ts-ignore
-      const val = data[p] as any;
+    for (const p in data.items) {
+      const val = data.items[p];
       gameState.players[p as any as number].accept(val);
       const state = get().players;
       if (
@@ -236,7 +236,6 @@ export const useGameStore = create<State>((set, get) => ({
             ...state,
             [p]: {
               ...state[p],
-              name: val.name ?? state[p].name,
               world: val.world ?? state[p].world,
               area: val.area ?? state[p].area,
               dt: val.deathTimer !== undefined ? val.deathTimer : state[p].dt,
@@ -253,8 +252,10 @@ export const useGameStore = create<State>((set, get) => ({
     }
   },
   updateEntities(data) {
-    for (const e in data.items) {
-      gameState.entities[e as any as number].accept(data.items[e] as any);
+    for (const e of Object.keys(data.items)) {
+      gameState.entities[e as any as number].accept(
+        data.items[e as any as number] as any,
+      );
     }
   },
   closeEntities(data) {

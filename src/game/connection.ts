@@ -43,12 +43,9 @@ export class WebSocketConnection {
     this.ws.binaryType = "arraybuffer";
     this.ws.onopen = () => {
       setTimeout(() => {
-        this.wrapAndSend(game.ClientInitSchema, {
-          pkg: {
-            case: "init",
-            value: {
-              hero: "",
-            },
+        this.wrapAndSend(game.ClientMessageSchema, {
+          init: {
+            hero: "",
           },
         });
       }, 100);
@@ -85,14 +82,14 @@ export class WebSocketConnection {
   link() {
     mouseEvents.on("move", (mousePos) => {
       if (this.open) {
-        this.wrapAndSend(game.ClientMousePosSchema, {
+        this.wrapAndSend(game.ClientMessageSchema, {
           mousePos,
         });
       }
     });
     mouseEvents.on("enable", (mouseEnable) => {
       if (this.open) {
-        this.wrapAndSend(game.ClientMousePosSchema, {
+        this.wrapAndSend(game.ClientMessageSchema, {
           mouseEnable,
         });
       }
@@ -100,14 +97,14 @@ export class WebSocketConnection {
     keyboardEvents.on("down", (key) => {
       if (this.open) {
         if (key === "first" || key === "second") {
-          this.wrapAndSend(game.ClientMousePosSchema, {
+          this.wrapAndSend(game.ClientMessageSchema, {
             ability:
               key === "first"
                 ? game.ClientAbility.FIRST
                 : game.ClientAbility.SECOND,
           });
         } else if (key.indexOf("upgrade_") === -1)
-          this.wrapAndSend(game.ClientMousePosSchema, {
+          this.wrapAndSend(game.ClientMessageSchema, {
             keyDown: localToProto[key],
           });
       }
@@ -115,7 +112,7 @@ export class WebSocketConnection {
 
     keyboardEvents.on("up", (key) => {
       if (key.indexOf("upgrade_") === -1)
-        this.wrapAndSend(game.ClientMousePosSchema, {
+        this.wrapAndSend(game.ClientMessageSchema, {
           keyUp: localToProto[key],
         });
     });
@@ -132,7 +129,6 @@ export class WebSocketConnection {
       const pkg = packages.items[index].kind;
       const data = pkg.value!;
       const key = pkg.case!;
-      console.log(key, data);
       try {
         switch (key) {
           case "chatMessage":

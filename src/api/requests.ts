@@ -114,6 +114,13 @@ export class ApiRequests {
     return { status: response.status };
   }
 
+  public static async adminServerRem(
+    props: http.AdminModeRemServerRequest,
+  ): Promise<ApiResponse<any>> {
+    const response = await ApiRequests.post("/admin/servers/rem", props);
+    return { status: response.status };
+  }
+
   public static async worlds(serverUrl: string): Promise<http.WorldsResponse> {
     const response = await ApiRequests.fetchFromServer({
       url: "/worlds",
