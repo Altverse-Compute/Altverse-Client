@@ -132,14 +132,37 @@ export const AdminEditServerModal = ({ selectedServer, modalRef }: Props) => {
             >
               Update
             </button>
-            <button
-              className={"btn btn-lg btn-error"}
-              onClick={() => {
-                modalRef.current?.close();
-              }}
-            >
-              Close
-            </button>
+            <div className={"gap-2 flex"}>
+              <button
+                className={"btn btn-lg btn-error"}
+                onClick={async () => {
+                  const result = await ApiRequests.adminServerRem(
+                    create(http.AdminModeRemServerRequestSchema, {
+                      id: selectedServer?.id ?? "",
+                    }),
+                  );
+                  if (result.status === http.ResponseStatus.Ok) {
+                    notifications.addNotification({
+                      message: "Server successfully edited",
+                      title: "Server Edit",
+                      type: "success",
+                    });
+                    fetchServers();
+                  }
+                  modalRef.current?.close();
+                }}
+              >
+                Delete
+              </button>
+              <button
+                className={"btn btn-lg btn-error"}
+                onClick={() => {
+                  modalRef.current?.close();
+                }}
+              >
+                Close
+              </button>
+            </div>
           </div>
         </div>
       </dialog>
