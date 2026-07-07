@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { ApiRequests } from "../api/requests";
-import type { http } from "../proto/generated/js";
+import type { WorldResponse } from "@proto/http_pb";
 
 interface State {
-  worlds: Record<string, http.IWorldResponse>;
+  worlds: Record<string, WorldResponse>;
   loaded: boolean;
   fetch: (serverUrl: string) => void;
 }

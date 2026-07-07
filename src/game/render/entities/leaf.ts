@@ -1,3 +1,4 @@
+import type { AltverseServer } from "@proto/game";
 import AssetLoader from "../../storages/assets";
 import Camera from "../../storages/camera";
 import Entity from "../../units/entity";
@@ -8,7 +9,7 @@ const arr = [AssetLoader.images.leaf, AssetLoader.images.leaf2];
 export class Leaf extends Entity {
   leafImage: HTMLImageElement;
 
-  constructor(props: game.PackedEntity) {
+  constructor(props: AltverseServer.PackedEntity) {
     super(props);
     this.leafImage = arr[Math.round(Math.random())];
   }

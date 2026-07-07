@@ -41,7 +41,7 @@ export function useChat() {
     if (!inputRef.current) return;
     const input = inputRef.current;
     if (isChatting) {
-      input.value !== "" && webSocketConnection.sendMessage(input.value);
+      input.value !== "" && webSocketConnection.sendChat(input.value);
       input.value = "";
       input.blur();
     } else {

@@ -33,15 +33,5 @@ export default class Zone {
     ctx.rect(pos.x, pos.y, this.w * Camera.s, this.h * Camera.s);
     ctx.fill();
     ctx.closePath();
-    ctx.beginPath();
-    ctx.fillStyle = "rgba(91,122,132,0.39)";
-    ctx.rect(
-      Camera.w / 2 + (this.x - Camera.x) * Camera.s,
-      Camera.h / 2 + (this.y - Camera.y) * Camera.s,
-      this.w * Camera.s,
-      this.h * Camera.s
-    );
-    ctx.fill();
-    ctx.closePath();
   }
 }

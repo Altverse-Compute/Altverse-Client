@@ -131,7 +131,7 @@ export class Render {
       x: -10 * 32,
       y: 0,
     });
-    ctx.globalAlpha = world.areaAlpha ?? 0.3;
+    ctx.globalAlpha = world.areaAlpha ? world.areaAlpha / 255 : 0.5;
     ctx.fillStyle = world.areaFill!;
     ctx.fillRect(
       pos.x,
@@ -139,7 +139,7 @@ export class Render {
       (gameState.areaBoundary.w + 20 * 32) * Camera.s,
       gameState.areaBoundary.h * Camera.s,
     );
-    if (world.backgrounds) {
+    if (world.backgrounds != null) {
       for (const texture of world.backgrounds) {
         ctx.globalAlpha = texture.alpha!;
 

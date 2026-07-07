@@ -1,6 +1,7 @@
 import { useEffect } from "preact/hooks";
 import { useChat } from "../../../hooks/chat";
 import styles from "./index.module.css";
+import { useAssetsStore } from "../../../stores/assets";
 
 export function Chat() {
   const {
@@ -25,11 +26,20 @@ export function Chat() {
           onScroll={() => onScroll()}
           ref={chatMessagesRef}
         >
-          {messages.map((value, index) => (
-            <div class={styles.chatMessage} key={index}>
-              <span>{value.author}</span>: {value.content}
-            </div>
-          ))}
+          {messages.map((value, index) => {
+            const color =
+              useAssetsStore.getState().worlds[value.world].properties
+                ?.fillStyle;
+            return (
+              <div
+                class={styles.chatMessage}
+                key={index}
+                style={"color: " + color}
+              >
+                <span>{value.author}</span>: {value.content}
+              </div>
+            );
+          })}
         </div>
         <input
           type="text"

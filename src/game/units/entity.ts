@@ -1,6 +1,7 @@
 import Camera from "../storages/camera";
 import { GlobalAssets } from "../../assets";
 import * as game from "@proto/game_pb";
+import type { AltverseServer } from "@proto/game";
 
 export default class Entity {
   harmless: boolean;
@@ -12,15 +13,15 @@ export default class Entity {
   state: number;
   stateMetadata: number;
 
-  constructor(props: game.PackedEntity) {
-    this.x = (props.x ?? 0) / 2;
-    this.y = (props.y ?? 0) / 2;
-    this.type = props.typeId ?? 0;
-    this.radius = (props.radius ?? 0) / 2;
-    this.harmless = props.harmless ?? false;
-    this.alpha = (props.alpha ?? 0) / 20;
-    this.state = props.state ?? 0;
-    this.stateMetadata = (props.stateMetadata ?? 0) / 2;
+  constructor(props: AltverseServer.PackedEntity) {
+    this.x = props.x();
+    this.y = props.y();
+    this.type = Number(props.typeId());
+    this.radius = props.radius();
+    this.harmless = props.harmless();
+    this.alpha = props.alpha();
+    this.state = props.state();
+    this.stateMetadata = props.stateMetadata();
   }
 
   draw(ctx: CanvasRenderingContext2D, _: number) {
@@ -29,7 +30,7 @@ export default class Entity {
     const ent = GlobalAssets.entities[this.type];
     ctx.fillStyle = (ent ?? ["#fff"])[0];
     ctx.strokeStyle = (ent ?? ["#fff"])[0];
-    ctx.globalAlpha = this.alpha !== 1 ? this.alpha : this.harmless ? 0.4 : 1;
+    ctx.globalAlpha = this.alpha < 1 ? this.alpha : this.harmless ? 0.4 : 1;
     const pos = Camera.transform(this);
     ctx.arc(pos.x, pos.y, this.radius * Camera.s, 0, Math.PI * 2);
     ctx.fill();
@@ -58,11 +59,16 @@ export default class Entity {
     ctx.closePath();
   }
 
-  accept(props: game.PackedEntity) {
-    this.x = props.x ? props.x / 2 : this.x;
-    this.y = props.y ? props.y / 2 : this.y;
-    this.radius = props.radius ? props.radius / 2 : this.radius;
-    this.harmless = props.harmless ?? this.harmless;
-    this.alpha = props.alpha != null ? props.alpha / 20 : this.alpha;
+  accept(props: AltverseServer.PartialEntity) {
+    const x = props.x();
+    const y = props.y();
+    const radius = props.radius();
+    const harmless = props.harmless();
+    const alpha = props.alpha();
+    this.x = x ? x : this.x;
+    this.y = y ? y : this.y;
+    this.radius = radius ? radius : this.radius;
+    this.harmless = harmless ?? this.harmless;
+    this.alpha = alpha != null ? alpha / 255 : this.alpha;
   }
 }

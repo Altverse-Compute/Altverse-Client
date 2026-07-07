@@ -2,16 +2,15 @@ import { keyboardEvents, localToProto } from "./events/keyboard";
 import { mouseEvents } from "./events/mouse";
 import { useGameStore } from "../stores/game";
 import * as game from "@proto/game_pb.ts";
-import { Compress } from "./compress.ts";
-import Cookies from "js-cookie";
+import * as flatbuffers from "flatbuffers";
 import {
   create,
-  fromBinary,
   toBinary,
   type DescMessage,
-  type Message,
   type MessageInitShape,
 } from "@bufbuild/protobuf";
+import { AltverseServer } from "@proto/game.ts";
+import { PackageKind } from "@proto/altverse-server.ts";
 
 export class WebSocketConnection {
   open: boolean = false;
@@ -28,12 +27,18 @@ export class WebSocketConnection {
   //   }
   // }
 
-  sendMessage(msg: string) {
+  sendChat(msg: string) {
     if (this.open) {
       this.ws!.send(
-        JSON.stringify({
-          message: msg,
-        }),
+        toBinary(
+          game.ClientMessageSchema,
+          create(game.ClientMessageSchema, {
+            pkg: {
+              case: "chatMessage",
+              value: msg,
+            },
+          }),
+        ),
       );
     }
   }
@@ -43,11 +48,19 @@ export class WebSocketConnection {
     this.ws.binaryType = "arraybuffer";
     this.ws.onopen = () => {
       setTimeout(() => {
-        this.wrapAndSend(game.ClientMessageSchema, {
-          init: {
-            hero: "",
-          },
-        });
+        this.ws!.send(
+          toBinary(
+            game.ClientMessageSchema,
+            create(game.ClientMessageSchema, {
+              pkg: {
+                case: "init",
+                value: {
+                  hero: "",
+                },
+              },
+            }),
+          ),
+        );
       }, 100);
       this.open = true;
     };
@@ -75,93 +88,170 @@ export class WebSocketConnection {
 
   wrapAndSend(schema: DescMessage, object: MessageInitShape<typeof schema>) {
     if (this.ws && this.ws.readyState === WebSocket.OPEN) {
-      this.ws!.send(toBinary(schema, create(schema, object)));
     }
   }
 
   link() {
     mouseEvents.on("move", (mousePos) => {
       if (this.open) {
-        this.wrapAndSend(game.ClientMessageSchema, {
-          mousePos,
-        });
+        this.ws!.send(
+          toBinary(
+            game.ClientMessageSchema,
+            create(game.ClientMessageSchema, {
+              pkg: {
+                case: "mousePos",
+                value: {
+                  ...mousePos,
+                },
+              },
+            }),
+          ),
+        );
       }
     });
     mouseEvents.on("enable", (mouseEnable) => {
       if (this.open) {
-        this.wrapAndSend(game.ClientMessageSchema, {
-          mouseEnable,
-        });
+        this.ws!.send(
+          toBinary(
+            game.ClientMessageSchema,
+            create(game.ClientMessageSchema, {
+              pkg: {
+                case: "mouseEnable",
+                value: mouseEnable,
+              },
+            }),
+          ),
+        );
       }
     });
     keyboardEvents.on("down", (key) => {
       if (this.open) {
         if (key === "first" || key === "second") {
-          this.wrapAndSend(game.ClientMessageSchema, {
-            ability:
-              key === "first"
-                ? game.ClientAbility.FIRST
-                : game.ClientAbility.SECOND,
-          });
+          this.ws!.send(
+            toBinary(
+              game.ClientMessageSchema,
+              create(game.ClientMessageSchema, {
+                pkg: {
+                  case: "ability",
+                  value:
+                    key === "first"
+                      ? game.ClientAbility.FIRST
+                      : game.ClientAbility.SECOND,
+                },
+              }),
+            ),
+          );
         } else if (key.indexOf("upgrade_") === -1)
-          this.wrapAndSend(game.ClientMessageSchema, {
-            keyDown: localToProto[key],
-          });
+          this.ws!.send(
+            toBinary(
+              game.ClientMessageSchema,
+              create(game.ClientMessageSchema, {
+                pkg: {
+                  case: "keyDown",
+                  value: localToProto[key],
+                },
+              }),
+            ),
+          );
       }
     });
 
     keyboardEvents.on("up", (key) => {
       if (key.indexOf("upgrade_") === -1)
-        this.wrapAndSend(game.ClientMessageSchema, {
-          keyUp: localToProto[key],
-        });
+        this.ws!.send(
+          toBinary(
+            game.ClientMessageSchema,
+            create(game.ClientMessageSchema, {
+              pkg: {
+                case: "keyUp",
+                value: localToProto[key],
+              },
+            }),
+          ),
+        );
     });
   }
 
   private onMessage = (event: MessageEvent) => {
     const uint8 = new Uint8Array(event.data);
     this.kBPerPackage += uint8.byteLength;
-    const packages = fromBinary(game.PackagesSchema, Compress.decode(uint8));
+    const flat = new flatbuffers.ByteBuffer(uint8);
+    const packages = AltverseServer.Packages.getRootAsPackages(flat);
     const gameService = useGameStore.getState();
     this.rawPPS++;
 
-    for (let index = 0; index < packages.items.length; index++) {
-      const pkg = packages.items[index].kind;
-      const data = pkg.value!;
-      const key = pkg.case!;
+    for (let index = 0; index < packages.itemsLength(); index++) {
+      const pkg = packages.items(index);
+      if (pkg === null) continue;
       try {
-        switch (key) {
-          case "chatMessage":
-            gameService.message(data as game.Chat);
-            break;
-          case "players":
-            gameService.uplayers(data as game.Players);
-            break;
-          case "myself":
-            gameService.self(data as game.PackedPlayer);
-            break;
-          case "areaInit":
-            gameService.areaInit(data as game.PackedArea);
-            break;
-          case "newPlayer":
-            gameService.newPlayer(data as game.PackedPlayer);
-            break;
-          case "closePlayer":
-            gameService.closePlayer(data as BigInt);
-            break;
-          case "updatePlayers":
-            if (data != null)
-              gameService.updatePlayers(data as game.UpdatePlayersMap);
-            break;
-          case "newEntities":
-            if (data) gameService.newEntities(data as game.Entities);
-            break;
-          case "updateEntities":
-            gameService.updateEntities(data as game.UpdateEntitiesMap);
-            break;
-          case "closeEntities":
-            gameService.closeEntities(data as game.CloseEntities);
-            break;
+        let type = pkg.kindType();
+        if (type === PackageKind.new_player) {
+          let data = pkg.kind(
+            new AltverseServer.PackedPlayer(),
+          ) as AltverseServer.PackedPlayer;
+          gameService.newPlayer(data);
+          continue;
+        }
+        if (type === PackageKind.close_player) {
+          let data = pkg.kind(
+            new AltverseServer.ClosePlayer(),
+          ) as AltverseServer.ClosePlayer;
+          gameService.closePlayer(data.id());
+          continue;
+        }
+        if (type === PackageKind.players) {
+          let data = pkg.kind(
+            new AltverseServer.Players(),
+          ) as AltverseServer.Players;
+          gameService.uplayers(data);
+          continue;
+        }
+        if (type === PackageKind.new_entities) {
+          let data = pkg.kind(
+            new AltverseServer.Entities(),
+          ) as AltverseServer.Entities;
+          gameService.newEntities(data);
+          continue;
+        }
+        if (type === PackageKind.close_entities) {
+          let data = pkg.kind(
+            new AltverseServer.CloseEntities(),
+          ) as AltverseServer.CloseEntities;
+          gameService.closeEntities(data);
+          continue;
+        }
+        if (type === PackageKind.area_init) {
+          let data = pkg.kind(
+            new AltverseServer.PackedArea(),
+          ) as AltverseServer.PackedArea;
+          gameService.areaInit(data);
+          continue;
+        }
+        if (type === PackageKind.myself) {
+          let data = pkg.kind(
+            new AltverseServer.PackedPlayer(),
+          ) as AltverseServer.PackedPlayer;
+          gameService.self(data);
+          continue;
+        }
+        if (type === PackageKind.update_entities) {
+          let data = pkg.kind(
+            new AltverseServer.UpdateEntities(),
+          ) as AltverseServer.UpdateEntities;
+          gameService.updateEntities(data);
+          continue;
+        }
+        if (type === PackageKind.update_players) {
+          let data = pkg.kind(
+            new AltverseServer.UpdatePlayers(),
+          ) as AltverseServer.UpdatePlayers;
+          gameService.updatePlayers(data);
+          continue;
+        }
+        if (type === PackageKind.chat) {
+          let data = pkg.kind(new AltverseServer.Chat()) as AltverseServer.Chat;
+          gameService.message(data);
+          continue;
         }
       } catch (e) {
         console.error(e);
