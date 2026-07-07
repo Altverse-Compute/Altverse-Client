@@ -27,12 +27,18 @@ export class WebSocketConnection {
   //   }
   // }
 
-  sendMessage(msg: string) {
+  sendChat(msg: string) {
     if (this.open) {
       this.ws!.send(
-        JSON.stringify({
-          message: msg,
-        }),
+        toBinary(
+          game.ClientMessageSchema,
+          create(game.ClientMessageSchema, {
+            pkg: {
+              case: "chatMessage",
+              value: msg,
+            },
+          }),
+        ),
       );
     }
   }
@@ -176,66 +182,76 @@ export class WebSocketConnection {
 
     for (let index = 0; index < packages.itemsLength(); index++) {
       const pkg = packages.items(index);
-      if (!pkg) continue;
+      if (pkg === null) continue;
       try {
         let type = pkg.kindType();
-        if (type === PackageKind.chat) {
-          let data = pkg.kind(new AltverseServer.Chat()) as AltverseServer.Chat;
-          gameService.message(data);
-        }
-        if (type === PackageKind.players) {
-          let data = pkg.kind(
-            new AltverseServer.Players(),
-          ) as AltverseServer.Players;
-          gameService.uplayers(data);
-        }
-        if (type === PackageKind.myself) {
-          let data = pkg.kind(
-            new AltverseServer.PackedPlayer(),
-          ) as AltverseServer.PackedPlayer;
-          gameService.self(data);
-        }
-        if (type === PackageKind.area_init) {
-          let data = pkg.kind(
-            new AltverseServer.PackedArea(),
-          ) as AltverseServer.PackedArea;
-          gameService.areaInit(data);
-        }
         if (type === PackageKind.new_player) {
           let data = pkg.kind(
             new AltverseServer.PackedPlayer(),
           ) as AltverseServer.PackedPlayer;
           gameService.newPlayer(data);
+          continue;
         }
         if (type === PackageKind.close_player) {
           let data = pkg.kind(
             new AltverseServer.ClosePlayer(),
           ) as AltverseServer.ClosePlayer;
           gameService.closePlayer(data.id());
+          continue;
         }
-        if (type === PackageKind.update_players) {
+        if (type === PackageKind.players) {
           let data = pkg.kind(
-            new AltverseServer.UpdatePlayers(),
-          ) as AltverseServer.UpdatePlayers;
-          gameService.updatePlayers(data);
+            new AltverseServer.Players(),
+          ) as AltverseServer.Players;
+          gameService.uplayers(data);
+          continue;
         }
         if (type === PackageKind.new_entities) {
           let data = pkg.kind(
             new AltverseServer.Entities(),
           ) as AltverseServer.Entities;
           gameService.newEntities(data);
-        }
-        if (type === PackageKind.update_entities) {
-          let data = pkg.kind(
-            new AltverseServer.UpdateEntities(),
-          ) as AltverseServer.UpdateEntities;
-          gameService.updateEntities(data);
+          continue;
         }
         if (type === PackageKind.close_entities) {
           let data = pkg.kind(
             new AltverseServer.CloseEntities(),
           ) as AltverseServer.CloseEntities;
           gameService.closeEntities(data);
+          continue;
+        }
+        if (type === PackageKind.area_init) {
+          let data = pkg.kind(
+            new AltverseServer.PackedArea(),
+          ) as AltverseServer.PackedArea;
+          gameService.areaInit(data);
+          continue;
+        }
+        if (type === PackageKind.myself) {
+          let data = pkg.kind(
+            new AltverseServer.PackedPlayer(),
+          ) as AltverseServer.PackedPlayer;
+          gameService.self(data);
+          continue;
+        }
+        if (type === PackageKind.update_entities) {
+          let data = pkg.kind(
+            new AltverseServer.UpdateEntities(),
+          ) as AltverseServer.UpdateEntities;
+          gameService.updateEntities(data);
+          continue;
+        }
+        if (type === PackageKind.update_players) {
+          let data = pkg.kind(
+            new AltverseServer.UpdatePlayers(),
+          ) as AltverseServer.UpdatePlayers;
+          gameService.updatePlayers(data);
+          continue;
+        }
+        if (type === PackageKind.chat) {
+          let data = pkg.kind(new AltverseServer.Chat()) as AltverseServer.Chat;
+          gameService.message(data);
+          continue;
         }
       } catch (e) {
         console.error(e);

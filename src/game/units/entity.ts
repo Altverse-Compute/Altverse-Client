@@ -30,7 +30,7 @@ export default class Entity {
     const ent = GlobalAssets.entities[this.type];
     ctx.fillStyle = (ent ?? ["#fff"])[0];
     ctx.strokeStyle = (ent ?? ["#fff"])[0];
-    ctx.globalAlpha = this.alpha !== 1 ? this.alpha : this.harmless ? 0.4 : 1;
+    ctx.globalAlpha = this.alpha < 1 ? this.alpha : this.harmless ? 0.4 : 1;
     const pos = Camera.transform(this);
     ctx.arc(pos.x, pos.y, this.radius * Camera.s, 0, Math.PI * 2);
     ctx.fill();
@@ -69,6 +69,6 @@ export default class Entity {
     this.y = y ? y : this.y;
     this.radius = radius ? radius : this.radius;
     this.harmless = harmless ?? this.harmless;
-    this.alpha = alpha != null ? alpha : this.alpha;
+    this.alpha = alpha != null ? alpha / 255 : this.alpha;
   }
 }

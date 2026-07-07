@@ -1,14 +1,14 @@
+import type { AltverseServer } from "@proto/game.ts";
 import AssetLoader from "../../storages/assets.ts";
 import Camera from "../../storages/camera.ts";
 import Entity from "../../units/entity.ts";
-import { game } from "../../../proto/generated/js";
 
 const arr = [AssetLoader.images.leaf, AssetLoader.images.leaf2];
 
 export class StormCloud extends Entity {
   leafImage: HTMLImageElement;
 
-  constructor(props: game.PackedEntity) {
+  constructor(props: AltverseServer.PackedEntity) {
     super(props);
     this.leafImage = arr[Math.round(Math.random())];
   }
@@ -24,7 +24,7 @@ export class StormCloud extends Entity {
       pos.x - size / 2,
       pos.y - size / 2,
       size,
-      size
+      size,
     );
     ctx.globalAlpha = 1;
     ctx.closePath();

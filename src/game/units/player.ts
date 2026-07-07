@@ -135,7 +135,7 @@ export abstract class Player {
     this.area = area ? Number(area) : this.area;
     this.speed.accept(speed ?? 0);
     this.energy.accept(energy ?? 0, maxEnergy ?? 0);
-    this.dt = deathTimer ? deathTimer : this.dt;
+    this.dt = deathTimer ? Math.floor(deathTimer) : this.dt;
     this.died = died !== null ? died : this.died;
     this.state = state ?? this.state;
     this.stateMeta = stateMeta ? stateMeta : this.stateMeta;
