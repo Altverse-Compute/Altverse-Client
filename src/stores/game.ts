@@ -6,6 +6,7 @@ import { Spawn } from "../game/spawner";
 import { useKeyboard } from "./keyboard";
 import { useMouseStore } from "./mouse";
 import * as server from "@proto/altverse-server.ts";
+import { PackageReaderWrapper } from "../game/wrapper";
 
 export interface GameState {
   areaBoundary: { w: number; h: number };
@@ -258,12 +259,16 @@ export const useGameStore = create<State>((set, get) => ({
       const key = Number(body.key()!);
       const value = body.value()!;
 
-      gameState.players[key].accept(value);
+      const decoded = new PackageReaderWrapper(value.dataArray()!).readPlayer(
+        value.mask(),
+      );
+
+      gameState.players[key].accept(decoded);
       const state = get().players;
-      const deathTimer = value.deathTimer();
-      const died = value.died();
-      const world = value.world();
-      const area = Number(value.area());
+      const deathTimer = decoded.deathTimer;
+      const died = decoded.died;
+      const world = decoded.world;
+      const area = Number(decoded.area);
       if (
         (deathTimer !== null && state[key].dt !== deathTimer) ||
         (died !== undefined && state[key].died !== died) ||
@@ -303,7 +308,10 @@ export const useGameStore = create<State>((set, get) => ({
       if (!body) continue;
       const id = Number(body.key());
       const dat = body.value()!;
-      gameState.entities[id].accept(dat);
+      const decoded = new PackageReaderWrapper(dat.dataArray()!).readEntity(
+        dat.mask(),
+      );
+      gameState.entities[id].accept(decoded);
     }
   },
   closeEntities(data) {

@@ -2,6 +2,7 @@ import Camera from "../storages/camera";
 import { GlobalAssets } from "../../assets";
 import * as game from "@proto/game_pb";
 import type { AltverseServer } from "@proto/game";
+import type { DecodedPartialEntity } from "../types";
 
 export default class Entity {
   harmless: boolean;
@@ -59,16 +60,11 @@ export default class Entity {
     ctx.closePath();
   }
 
-  accept(props: AltverseServer.PartialEntity) {
-    const x = props.x();
-    const y = props.y();
-    const radius = props.radius();
-    const harmless = props.harmless();
-    const alpha = props.alpha();
-    this.x = x ? x : this.x;
-    this.y = y ? y : this.y;
-    this.radius = radius ? radius : this.radius;
-    this.harmless = harmless ?? this.harmless;
-    this.alpha = alpha != null ? alpha / 255 : this.alpha;
+  accept(props: DecodedPartialEntity) {
+    this.x = props.x ? props.x : this.x;
+    this.y = props.y ? props.y : this.y;
+    this.radius = props.radius ? props.radius : this.radius;
+    this.harmless = props.harmless ?? this.harmless;
+    this.alpha = props.alpha != null ? props.alpha : this.alpha;
   }
 }

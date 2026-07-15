@@ -1,6 +1,7 @@
 import type { AltverseServer } from "@proto/game";
 import Camera from "../storages/camera";
 import MaxContainer from "./maxcur";
+import type { DecodedPartialPlayer } from "../types";
 
 export abstract class Player {
   x: number;
@@ -116,28 +117,16 @@ export abstract class Player {
     renderPos: { x: number; y: number },
   ): void;
 
-  accept(props: AltverseServer.PartialPlayer) {
-    if (props == null) return;
-    const x = props.x();
-    const y = props.y();
-    const world = props.world();
-    const area = props.area();
-    const speed = props.speed();
-    const energy = props.energy();
-    const maxEnergy = props.maxEnergy();
-    const deathTimer = props.deathTimer();
-    const died = props.died();
-    const state = props.state();
-    const stateMeta = props.stateMetadata();
-    this.x = x ? x : this.x;
-    this.y = y ? y : this.y;
-    this.world = world ?? this.world;
-    this.area = area ? Number(area) : this.area;
-    this.speed.accept(speed ?? 0);
-    this.energy.accept(energy ?? 0, maxEnergy ?? 0);
-    this.dt = deathTimer ? Math.floor(deathTimer) : this.dt;
-    this.died = died !== null ? died : this.died;
-    this.state = state ?? this.state;
-    this.stateMeta = stateMeta ? stateMeta : this.stateMeta;
+  accept(props: DecodedPartialPlayer) {
+    this.x = props.x ? props.x : this.x;
+    this.y = props.y ? props.y : this.y;
+    this.world = props.world ?? this.world;
+    this.area = props.area ? props.area : this.area;
+    this.speed.accept(props.speed ?? 0);
+    this.energy.accept(props.energy ?? 0, props.maxEnergy ?? 0);
+    this.dt = props.deathTimer ? Math.floor(props.deathTimer) : this.dt;
+    this.died = props.died !== null ? props.died : this.died;
+    this.state = props.state ?? this.state;
+    this.stateMeta = props.stateMetadata ? props.stateMetadata : this.stateMeta;
   }
 }
