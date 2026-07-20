@@ -1,7 +1,6 @@
-import type { AltverseServer } from "@proto/game";
 import Camera from "../storages/camera";
 import MaxContainer from "./maxcur";
-import type { DecodedPartialPlayer } from "../types";
+import type { IPackedPlayer, IPartialPlayer } from "../pulse";
 
 export abstract class Player {
   x: number;
@@ -27,22 +26,22 @@ export abstract class Player {
 
   abstract color: string;
 
-  constructor(props: AltverseServer.PackedPlayer) {
-    this.x = props.x();
-    this.y = props.y();
-    this.dt = props.deathTimer();
-    this.id = Number(props.id());
-    this.name = props.name() ?? "";
-    this.area = Number(props.area());
-    this.died = props.died();
-    this.world = props.world() ?? "";
+  constructor(props: IPackedPlayer) {
+    this.x = props.x;
+    this.y = props.y;
+    this.dt = props.death_timer;
+    this.id = Number(props.id);
+    this.name = props.name ?? "";
+    this.area = Number(props.area);
+    this.died = props.downed;
+    this.world = props.world ?? "";
     this.regen = new MaxContainer(1, 7);
-    this.speed = new MaxContainer(props.speed(), 17);
-    this.energy = new MaxContainer(props.energy(), props.maxEnergy() ?? 0);
-    this.radius = props.radius();
-    this.state = props.state();
-    this.stateMeta = props.stateMeta();
-    this.hero = props.hero();
+    this.speed = new MaxContainer(props.speed, 17);
+    this.energy = new MaxContainer(props.energy, props.max_energy ?? 0);
+    this.radius = props.radius;
+    this.state = props.state;
+    this.stateMeta = props.state_meta;
+    this.hero = props.hero;
   }
 
   draw(ctx: CanvasRenderingContext2D, sid: number) {
@@ -117,16 +116,16 @@ export abstract class Player {
     renderPos: { x: number; y: number },
   ): void;
 
-  accept(props: DecodedPartialPlayer) {
+  accept(props: IPartialPlayer) {
     this.x = props.x ? props.x : this.x;
     this.y = props.y ? props.y : this.y;
     this.world = props.world ?? this.world;
     this.area = props.area ? props.area : this.area;
     this.speed.accept(props.speed ?? 0);
-    this.energy.accept(props.energy ?? 0, props.maxEnergy ?? 0);
-    this.dt = props.deathTimer ? Math.floor(props.deathTimer) : this.dt;
-    this.died = props.died !== null ? props.died : this.died;
+    this.energy.accept(props.energy ?? 0, props.max_energy ?? 0);
+    this.dt = props.death_timer ? Math.floor(props.death_timer) : this.dt;
+    this.died = props.downed !== null ? props.downed : this.died;
     this.state = props.state ?? this.state;
-    this.stateMeta = props.stateMetadata ? props.stateMetadata : this.stateMeta;
+    this.stateMeta = props.state_meta ? props.state_meta : this.stateMeta;
   }
 }

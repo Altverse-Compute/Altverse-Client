@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "flat:gen": "flatc --ts -I ./src/proto/flat -o ./src/proto/gen ./src/proto/flat/game.fbs",
-    "proto:gen": "NODE_OPTIONS=\"--no-experimental-webstorage\" buf generate"0
+    "proto:gen": "NODE_OPTIONS=\"--no-experimental-webstorage\" buf generate"
   },
   "dependencies": {
     "@bufbuild/protobuf": "^2.12.0",

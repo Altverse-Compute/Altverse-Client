@@ -44,6 +44,27 @@ export class PackageReader {
     return value >>> 0;
   }
 
+  readVarU32(): number {
+    let value = 0;
+    let shift = 0;
+
+    while (true) {
+      const byte = this.readU8();
+
+      value |= (byte & 0x7f) << shift;
+
+      if ((byte & 0x80) === 0) {
+        return value >>> 0;
+      }
+
+      shift += 7;
+
+      if (shift > 35) {
+        throw new Error("Invalid VarInt");
+      }
+    }
+  }
+
   readU64(): bigint {
     const view = new DataView(
       this.data.buffer,
@@ -70,7 +91,7 @@ export class PackageReader {
   }
 
   readString(): string {
-    const length = this.readU32();
+    const length = this.readVarU32();
 
     const bytes = this.data.subarray(this.offset, this.offset + length);
 
