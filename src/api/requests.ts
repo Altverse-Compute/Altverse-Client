@@ -43,7 +43,6 @@ export class ApiRequests {
   ): Promise<ApiResponse<http.ProfileResponse>> {
     const response = await ApiRequests.get("/profile/" + username);
     const bytes = await response.bytes();
-    console.log(bytes);
     return this.handleErrorResponse(
       response,
       bytes,

@@ -42,7 +42,7 @@ export function useGame(
   };
   const render = () => {
     requestAnimationFrame(render);
-    if (!useGameStore.getState().isGameInit) return;
+    //if (!useGameStore.getState().isGameInit) return;
     Render.render(canvasRef.current!, contextRef.current!);
   };
 

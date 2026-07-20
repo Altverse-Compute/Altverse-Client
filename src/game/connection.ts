@@ -9,8 +9,7 @@ import {
   type DescMessage,
   type MessageInitShape,
 } from "@bufbuild/protobuf";
-import { AltverseServer } from "@proto/game.ts";
-import { PackageKind } from "@proto/altverse-server.ts";
+import { Packages } from "./pulse";
 
 export class WebSocketConnection {
   open: boolean = false;
@@ -174,89 +173,125 @@ export class WebSocketConnection {
 
   private onMessage = (event: MessageEvent) => {
     const uint8 = new Uint8Array(event.data);
+    console.log(event.data);
     this.kBPerPackage += uint8.byteLength;
-    const flat = new flatbuffers.ByteBuffer(uint8);
-    const packages = AltverseServer.Packages.getRootAsPackages(flat);
+    //const flat = new flatbuffers.ByteBuffer(uint8);
+    //const packages = AltverseServer.Packages.getRootAsPackages(flat);
     const gameService = useGameStore.getState();
     this.rawPPS++;
 
-    for (let index = 0; index < packages.itemsLength(); index++) {
-      const pkg = packages.items(index);
-      if (pkg === null) continue;
-      try {
-        let type = pkg.kindType();
-        if (type === PackageKind.new_player) {
-          let data = pkg.kind(
-            new AltverseServer.PackedPlayer(),
-          ) as AltverseServer.PackedPlayer;
-          gameService.newPlayer(data);
-          continue;
-        }
-        if (type === PackageKind.close_player) {
-          let data = pkg.kind(
-            new AltverseServer.ClosePlayer(),
-          ) as AltverseServer.ClosePlayer;
-          gameService.closePlayer(data.id());
-          continue;
-        }
-        if (type === PackageKind.players) {
-          let data = pkg.kind(
-            new AltverseServer.Players(),
-          ) as AltverseServer.Players;
-          gameService.uplayers(data);
-          continue;
-        }
-        if (type === PackageKind.new_entities) {
-          let data = pkg.kind(
-            new AltverseServer.Entities(),
-          ) as AltverseServer.Entities;
-          gameService.newEntities(data);
-          continue;
-        }
-        if (type === PackageKind.close_entities) {
-          let data = pkg.kind(
-            new AltverseServer.CloseEntities(),
-          ) as AltverseServer.CloseEntities;
-          gameService.closeEntities(data);
-          continue;
-        }
-        if (type === PackageKind.area_init) {
-          let data = pkg.kind(
-            new AltverseServer.PackedArea(),
-          ) as AltverseServer.PackedArea;
-          gameService.areaInit(data);
-          continue;
-        }
-        if (type === PackageKind.myself) {
-          let data = pkg.kind(
-            new AltverseServer.PackedPlayer(),
-          ) as AltverseServer.PackedPlayer;
-          gameService.self(data);
-          continue;
-        }
-        if (type === PackageKind.update_entities) {
-          let data = pkg.kind(
-            new AltverseServer.UpdateEntities(),
-          ) as AltverseServer.UpdateEntities;
-          gameService.updateEntities(data);
-          continue;
-        }
-        if (type === PackageKind.update_players) {
-          let data = pkg.kind(
-            new AltverseServer.UpdatePlayers(),
-          ) as AltverseServer.UpdatePlayers;
-          gameService.updatePlayers(data);
-          continue;
-        }
-        if (type === PackageKind.chat) {
-          let data = pkg.kind(new AltverseServer.Chat()) as AltverseServer.Chat;
-          gameService.message(data);
-          continue;
-        }
-      } catch (e) {
-        console.error(e);
+    const packages = Packages.fromUint8Array(uint8);
+
+    for (const pkg of packages.items) {
+      if (pkg.area_init) {
+        gameService.areaInit(pkg.area_init);
+      }
+      if (pkg.chat) {
+        gameService.message(pkg.chat);
+      }
+      if (pkg.close_entities) {
+        gameService.closeEntities(pkg.close_entities);
+      }
+      if (pkg.close_player) {
+        gameService.closePlayer(pkg.close_player);
+      }
+      if (pkg.myself) {
+        gameService.self(pkg.myself);
+      }
+      if (pkg.new_entities) {
+        gameService.newEntities(pkg.new_entities);
+      }
+      if (pkg.new_player) {
+        gameService.newPlayer(pkg.new_player);
+      }
+      if (pkg.players) {
+        gameService.uplayers(pkg.players);
+      }
+      if (pkg.update_entities) {
+        gameService.updateEntities(pkg.update_entities);
+      }
+      if (pkg.update_players) {
+        gameService.updatePlayers(pkg.update_players);
       }
     }
+
+    // for (let index = 0; index < packages.itemsLength(); index++) {
+    //   const pkg = packages.items(index);
+    //   if (pkg === null) continue;
+    //   try {
+    //     let type = pkg.kindType();
+    //     if (type === PackageKind.new_player) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.PackedPlayer(),
+    //       ) as AltverseServer.PackedPlayer;
+    //       gameService.newPlayer(data);
+    //       continue;
+    //     }
+    //     if (type === PackageKind.close_player) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.ClosePlayer(),
+    //       ) as AltverseServer.ClosePlayer;
+    //       gameService.closePlayer(data.id());
+    //       continue;
+    //     }
+    //     if (type === PackageKind.players) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.Players(),
+    //       ) as AltverseServer.Players;
+    //       gameService.uplayers(data);
+    //       continue;
+    //     }
+    //     if (type === PackageKind.new_entities) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.Entities(),
+    //       ) as AltverseServer.Entities;
+    //       gameService.newEntities(data);
+    //       continue;
+    //     }
+    //     if (type === PackageKind.close_entities) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.CloseEntities(),
+    //       ) as AltverseServer.CloseEntities;
+    //       gameService.closeEntities(data);
+    //       continue;
+    //     }
+    //     if (type === PackageKind.area_init) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.PackedArea(),
+    //       ) as AltverseServer.PackedArea;
+    //       gameService.areaInit(data);
+    //       continue;
+    //     }
+    //     if (type === PackageKind.myself) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.PackedPlayer(),
+    //       ) as AltverseServer.PackedPlayer;
+    //       gameService.self(data);
+    //       continue;
+    //     }
+    //     if (type === PackageKind.update_entities) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.UpdateEntities(),
+    //       ) as AltverseServer.UpdateEntities;
+    //       gameService.updateEntities(data);
+    //       continue;
+    //     }
+    //     if (type === PackageKind.update_players) {
+    //       let data = pkg.kind(
+    //         new AltverseServer.UpdatePlayers(),
+    //       ) as AltverseServer.UpdatePlayers;
+    //       gameService.updatePlayers(data);
+    //       continue;
+    //     }
+    //     if (type === PackageKind.chat) {
+    //       let data = pkg.kind(new AltverseServer.Chat()) as AltverseServer.Chat;
+    //       gameService.message(data);
+    //       continue;
+    //     }
+    //   } catch (e) {
+    //     console.error(e);
+    //   }
+    // }
   };
 }
 

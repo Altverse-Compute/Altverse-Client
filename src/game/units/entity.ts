@@ -1,7 +1,7 @@
 import Camera from "../storages/camera";
 import { GlobalAssets } from "../../assets";
 import * as game from "@proto/game_pb";
-import type { AltverseServer } from "@proto/game";
+import type { IPackedEntity, IPartialEntity } from "../pulse";
 
 export default class Entity {
   harmless: boolean;
@@ -13,15 +13,15 @@ export default class Entity {
   state: number;
   stateMetadata: number;
 
-  constructor(props: AltverseServer.PackedEntity) {
-    this.x = props.x();
-    this.y = props.y();
-    this.type = Number(props.typeId());
-    this.radius = props.radius();
-    this.harmless = props.harmless();
-    this.alpha = props.alpha();
-    this.state = props.state();
-    this.stateMetadata = props.stateMetadata();
+  constructor(props: IPackedEntity) {
+    this.x = props.x;
+    this.y = props.y;
+    this.type = Number(props.type_id);
+    this.radius = props.radius;
+    this.harmless = props.harmless;
+    this.alpha = props.alpha;
+    this.state = props.state;
+    this.stateMetadata = props.state_meta;
   }
 
   draw(ctx: CanvasRenderingContext2D, _: number) {
@@ -59,16 +59,11 @@ export default class Entity {
     ctx.closePath();
   }
 
-  accept(props: AltverseServer.PartialEntity) {
-    const x = props.x();
-    const y = props.y();
-    const radius = props.radius();
-    const harmless = props.harmless();
-    const alpha = props.alpha();
-    this.x = x ? x : this.x;
-    this.y = y ? y : this.y;
-    this.radius = radius ? radius : this.radius;
-    this.harmless = harmless ?? this.harmless;
-    this.alpha = alpha != null ? alpha / 255 : this.alpha;
+  accept(props: IPartialEntity) {
+    this.x = props.x ? props.x : this.x;
+    this.y = props.y ? props.y : this.y;
+    this.radius = props.radius ? props.radius : this.radius;
+    this.harmless = props.harmless ?? this.harmless;
+    this.alpha = props.alpha != null ? props.alpha : this.alpha;
   }
 }
